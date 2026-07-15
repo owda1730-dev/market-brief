@@ -4,38 +4,54 @@ on:
   schedule:
     - cron: "0 0 * * *"
   workflow_dispatch: {}
+  push:
+    branches: [ main ]
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 concurrency:
-  group: daily-build
+  group: pages
   cancel-in-progress: false
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
       - name: Install deps
         run: pip install -r requirements.txt
-
       - name: Build index.html
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python build.py
-
-      - name: Commit updated page
+      - name: Persist data.json history
         run: |
           git config user.name "market-bot"
           git config user.email "market-bot@users.noreply.github.com"
-          git add index.html data.json
-          git commit -m "auto: daily update $(date -u +%Y-%m-%d)" || echo "no changes to commit"
-          git push
+          git add data.json index.html
+          git commit -m "auto update $(date -u +%Y-%m-%dT%H%M)" || echo "no changes"
+          git push || echo "push skipped"
+      - name: Assemble site
+        run: |
+          mkdir -p _site
+          cp index.html manifest.webmanifest sw.js icon-192.png icon-512.png data.json _site/ 2>/dev/null || true
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
