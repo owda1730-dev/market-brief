@@ -19,25 +19,22 @@
   "2026-07-13": {
    "margin_yi": 6182.99,
    "short_zhang": 203238
+  },
+  "2026-07-09": {
+   "margin_yi": 6196.48,
+   "short_zhang": 203714
+  },
+  "2026-07-08": {
+   "margin_yi": 6138.16,
+   "short_zhang": 205830
+  },
+  "2026-07-07": {
+   "margin_yi": 6109.45,
+   "short_zhang": 213844
   }
  },
- "updated": "2026-07-15T23:23:32.416564+08:00",
+ "updated": "2026-07-15T23:39:25.622903+08:00",
  "status": {
-  "price_err": {
-   "taiex": "yf:HTTPError",
-   "kospi": "yf:HTTPError",
-   "nikkei": "yf:HTTPError",
-   "sox": "yf:HTTPError",
-   "ndq": "yf:HTTPError",
-   "spx": "yf:HTTPError",
-   "dxy": "yf:HTTPError",
-   "wti": "yf:HTTPError",
-   "brent": "yf:HTTPError",
-   "gold": "yf:HTTPError",
-   "us10y": "yf:HTTPError",
-   "vix": "yf:HTTPError",
-   "usdtwd": "yf:HTTPError"
-  },
   "prices_ok": [],
   "prices_fail": [
    "taiex",
@@ -54,9 +51,23 @@
    "vix",
    "usdtwd"
   ],
+  "price_diag": {
+   "taiex": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "kospi": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "nikkei": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "sox": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "ndq": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "spx": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "dxy": "yf:HTTP429",
+   "wti": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "brent": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "gold": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "us10y": "yf:HTTP429",
+   "vix": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "usdtwd": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf"
+  },
   "taifex": "ok",
-  "margin_exc": "JSONDecodeError",
-  "margin_days": 3,
+  "margin_days": 6,
   "news_counts": {
    "tw": 8,
    "us": 8,
@@ -64,6 +75,34 @@
    "kr": 8,
    "trump": 8
   },
-  "gemini_err": "gemini-1.5-flash:HTTP404:{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"models/gemini-1.5-flash is not found for API version v1beta, or is not s"
+  "gemini_models_avail": [
+   "models/gemini-2.5-flash",
+   "models/gemini-2.5-pro",
+   "models/gemini-2.0-flash",
+   "models/gemini-2.0-flash-001",
+   "models/gemini-2.0-flash-lite-001",
+   "models/gemini-2.0-flash-lite",
+   "models/gemini-2.5-flash-preview-tts",
+   "models/gemini-2.5-pro-preview-tts",
+   "models/gemma-4-26b-a4b-it",
+   "models/gemma-4-31b-it",
+   "models/gemini-flash-latest",
+   "models/gemini-flash-lite-latest",
+   "models/gemini-pro-latest",
+   "models/gemini-2.5-flash-lite",
+   "models/gemini-2.5-flash-image",
+   "models/gemini-3-pro-preview",
+   "models/gemini-3-flash-preview",
+   "models/gemini-3.1-pro-preview",
+   "models/gemini-3.1-pro-preview-customtools",
+   "models/gemini-3.1-flash-lite-preview",
+   "models/gemini-3.1-flash-lite",
+   "models/gemini-3-pro-image-preview",
+   "models/gemini-3-pro-image",
+   "models/nano-banana-pro-preview",
+   "models/gemini-3.1-flash-image-preview"
+  ],
+  "gemini_model": "models/gemini-2.5-flash",
+  "gemini_err": "HTTP404:{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"This model models/gemini-2.5-flash is no longer available to new users. "
  }
 }

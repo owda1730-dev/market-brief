@@ -165,7 +165,7 @@ footer b{color:#555}
   <div class="card" style="--acc:#0c8599;--accbg:#e3f6f9">
     <div class="card-hd"><span class="ic">💳</span><h2>台股信用交易（融資／融券）</h2></div>
     <div class="card-bd">
-      <div class="date-tag">集中市場 · 近五個交易日（最新 07/15）</div><table><tr><th>日期</th><th>融資(億)</th><th>日增減</th><th>融券(張)</th><th>日增減</th></tr><tr><td>07/15</td><td>6,153.68</td><td class="up">+113.34</td><td>173,131</td><td class="down">-7,581</td></tr><tr><td>07/14</td><td>6,040.34</td><td class="down">-142.65</td><td>180,712</td><td class="down">-22,526</td></tr><tr><td>07/13</td><td>6,182.99</td><td class="sub">—</td><td>203,238</td><td class="sub">—</td></tr></table><div class="note">資料源：證交所 TWSE。融資增加(紅)＝散戶槓桿升溫；融券下降(綠)＝放空回補、降溫。</div>
+      <div class="date-tag">集中市場 · 近五個交易日（最新 07/15）</div><table><tr><th>日期</th><th>融資(億)</th><th>日增減</th><th>融券(張)</th><th>日增減</th></tr><tr><td>07/15</td><td>6,153.68</td><td class="up">+113.34</td><td>173,131</td><td class="down">-7,581</td></tr><tr><td>07/14</td><td>6,040.34</td><td class="down">-142.65</td><td>180,712</td><td class="down">-22,526</td></tr><tr><td>07/13</td><td>6,182.99</td><td class="down">-13.49</td><td>203,238</td><td class="down">-476</td></tr><tr><td>07/09</td><td>6,196.48</td><td class="up">+58.32</td><td>203,714</td><td class="down">-2,116</td></tr><tr><td>07/08</td><td>6,138.16</td><td class="sub">—</td><td>205,830</td><td class="sub">—</td></tr></table><div class="note">資料源：證交所 TWSE。融資增加(紅)＝散戶槓桿升溫；融券下降(綠)＝放空回補、降溫。</div>
     </div>
   </div>
 
@@ -248,7 +248,7 @@ document.querySelectorAll('#futSub .subtab').forEach(function(s){
   };
 });
 // 資料快照時間（靜態版；每天 08:00 由排程重新發佈最新版）
-document.getElementById('updTime').textContent='資料更新：2026/07/15 23:23（台北 GMT+8）· 每天 08:00 自動更新，或按「↻ 更新」重新載入';
+document.getElementById('updTime').textContent='資料更新：2026/07/15 23:39（台北 GMT+8）· 每天 08:00 自動更新，或按「↻ 更新」重新載入';
 // 立即更新按鈕：觸發排程任務重新抓取全部資料源
 (function(){
   var btn=document.getElementById('refreshBtn');
