@@ -1,12 +1,69 @@
 {
  "futures": {
   "2026-07-15": {
-   "foreign": -733065323,
-   "trust": 696941727,
-   "dealer": -6103921,
-   "total": -42227517
+   "foreign": -79557,
+   "trust": 75646,
+   "dealer": -664,
+   "total": -4575
   }
  },
- "margin": {},
- "updated": "2026-07-15T23:03:04.570815+08:00"
+ "margin": {
+  "2026-07-15": {
+   "margin_yi": 6153.68,
+   "short_zhang": 173131
+  },
+  "2026-07-14": {
+   "margin_yi": 6040.34,
+   "short_zhang": 180712
+  },
+  "2026-07-13": {
+   "margin_yi": 6182.99,
+   "short_zhang": 203238
+  }
+ },
+ "updated": "2026-07-15T23:23:32.416564+08:00",
+ "status": {
+  "price_err": {
+   "taiex": "yf:HTTPError",
+   "kospi": "yf:HTTPError",
+   "nikkei": "yf:HTTPError",
+   "sox": "yf:HTTPError",
+   "ndq": "yf:HTTPError",
+   "spx": "yf:HTTPError",
+   "dxy": "yf:HTTPError",
+   "wti": "yf:HTTPError",
+   "brent": "yf:HTTPError",
+   "gold": "yf:HTTPError",
+   "us10y": "yf:HTTPError",
+   "vix": "yf:HTTPError",
+   "usdtwd": "yf:HTTPError"
+  },
+  "prices_ok": [],
+  "prices_fail": [
+   "taiex",
+   "kospi",
+   "nikkei",
+   "sox",
+   "ndq",
+   "spx",
+   "dxy",
+   "wti",
+   "brent",
+   "gold",
+   "us10y",
+   "vix",
+   "usdtwd"
+  ],
+  "taifex": "ok",
+  "margin_exc": "JSONDecodeError",
+  "margin_days": 3,
+  "news_counts": {
+   "tw": 8,
+   "us": 8,
+   "jp": 8,
+   "kr": 8,
+   "trump": 8
+  },
+  "gemini_err": "gemini-1.5-flash:HTTP404:{\n  \"error\": {\n    \"code\": 404,\n    \"message\": \"models/gemini-1.5-flash is not found for API version v1beta, or is not s"
+ }
 }
