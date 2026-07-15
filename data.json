@@ -33,11 +33,9 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-15T23:48:12.110951+08:00",
+ "updated": "2026-07-15T23:56:06.157165+08:00",
  "status": {
-  "prices_ok": [
-   "gold"
-  ],
+  "prices_ok": [],
   "prices_fail": [
    "taiex",
    "kospi",
@@ -48,6 +46,7 @@
    "dxy",
    "wti",
    "brent",
+   "gold",
    "us10y",
    "vix",
    "usdtwd"
@@ -62,6 +61,7 @@
    "dxy": "yf:HTTP429",
    "wti": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
    "brent": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
+   "gold": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
    "us10y": "yf:HTTP429",
    "vix": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf",
    "usdtwd": "stooq:<!DOCTYPE html><html><head><meta charset=\"utf"
