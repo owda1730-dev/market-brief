@@ -55,20 +55,15 @@ def _pack(closes_dates, key):
         last, prev = last/10.0, prev/10.0; window = [c/10.0 for c in window]
     return {"last": last, "prev": prev, "lo": min(window), "hi": max(window), "date": closes[-1][0]}
 
-def fetch_yahoo(sym, key):
-    j = http_get(YF.format(s=urllib.parse.quote(sym)), is_json=True, timeout=20)
+def _parse_yahoo(j, key):
     res = j["chart"]["result"][0]
     ts = res.get("timestamp") or []
     closes = res["indicators"]["quote"][0]["close"]
-    cd = []
-    for i, c in enumerate(closes):
-        d = datetime.datetime.utcfromtimestamp(ts[i]).date().isoformat() if i < len(ts) else ""
-        cd.append((d, c))
+    cd = [(datetime.datetime.utcfromtimestamp(ts[i]).date().isoformat() if i < len(ts) else "", c)
+          for i, c in enumerate(closes)]
     return _pack(cd, key)
 
-def fetch_stooq(sym, key):
-    txt = http_get(f"https://stooq.com/q/d/l/?s={urllib.parse.quote(sym)}&i=d", timeout=20)
-    if "Date" not in txt: return None
+def _parse_stooq(txt, key):
     cd = []
     for r in csv.DictReader(io.StringIO(txt)):
         try: cd.append((r["Date"], float(r["Close"])))
@@ -76,21 +71,41 @@ def fetch_stooq(sym, key):
     return _pack(cd, key)
 
 def fetch_prices():
-    out = {}; ok = []; fail = []
+    out = {}; ok = []; fail = []; diag = {}
     for key in YAHOO_SYMBOLS:
         got = None
-        for src, sym in (("yf", YAHOO_SYMBOLS.get(key)), ("stooq", STOOQ_SYMBOLS.get(key))):
-            if not sym: continue
+        sym = YAHOO_SYMBOLS.get(key)
+        if sym:  # 1) Yahoo
             try:
-                got = fetch_yahoo(sym, key) if src == "yf" else fetch_stooq(sym, key)
-                if got: got["src"] = src; break
+                r = requests.get(YF.format(s=urllib.parse.quote(sym)),
+                                 headers={**UA, "Accept": "application/json"}, timeout=20)
+                if r.status_code == 200:
+                    got = _parse_yahoo(r.json(), key)
+                    if got: got["src"] = "yf"
+                    else: diag[key] = "yf:parse-none"
+                else:
+                    diag[key] = f"yf:HTTP{r.status_code}"
             except Exception as e:
-                got = None
-                STATUS.setdefault("price_err", {})[key] = f"{src}:{type(e).__name__}"
-            time.sleep(0.3)
+                diag[key] = f"yf:{type(e).__name__}"
+        if not got:  # 2) Stooq 備援
+            ssym = STOOQ_SYMBOLS.get(key)
+            if ssym:
+                try:
+                    r = requests.get(f"https://stooq.com/q/d/l/?s={urllib.parse.quote(ssym)}&i=d", headers=UA, timeout=20)
+                    txt = r.text
+                    if "Date" in txt and "Close" in txt:
+                        got = _parse_stooq(txt, key)
+                        if got: got["src"] = "stooq"
+                        else: diag[key] = "stooq:parse-none"
+                    else:
+                        diag[key] = "stooq:" + txt.strip().replace("\n", " ")[:45]
+                except Exception as e:
+                    diag[key] = f"stooq:{type(e).__name__}"
         if got: out[key] = got; ok.append(key)
-        else:   fail.append(key)
+        else: fail.append(key)
+        time.sleep(0.25)
     STATUS["prices_ok"] = ok; STATUS["prices_fail"] = fail
+    if diag: STATUS["price_diag"] = diag
     log("prices ok:", ok, "fail:", fail)
     return out
 
@@ -204,23 +219,38 @@ def gnews(query, en=False, n=8):
         if len(items) >= n: break
     return items
 
-GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash", "gemini-flash-latest", "gemini-1.5-flash"]
+def gemini_pick_model():
+    """問金鑰有哪些可用型號，挑一個支援 generateContent 的 flash 型號（避免叫錯 404）。"""
+    try:
+        j = http_get(f"https://generativelanguage.googleapis.com/v1beta/models?key={GEMINI_KEY}", is_json=True, timeout=20)
+        names = [m["name"] for m in j.get("models", [])
+                 if "generateContent" in (m.get("supportedGenerationMethods") or [])]
+        STATUS["gemini_models_avail"] = names[:25]
+        pref = [n for n in names if "flash" in n and "lite" not in n and "thinking" not in n] \
+               or [n for n in names if "flash" in n] or names
+        def score(n): return 3 if "2.5" in n else (2 if "2.0" in n else (1 if "1.5" in n else 0))
+        pref.sort(key=score, reverse=True)
+        return pref[0] if pref else None
+    except Exception as e:
+        STATUS["gemini_list_err"] = f"{type(e).__name__}:{str(e)[:80]}"
+        return None
+
 def gemini_call(prompt):
-    last_err = None
-    for model in GEMINI_MODELS:
-        url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}"
-        body = {"contents": [{"parts": [{"text": prompt}]}],
-                "generationConfig": {"temperature": 0.4, "responseMimeType": "application/json"}}
+    model = gemini_pick_model() or "models/gemini-2.5-flash"
+    STATUS["gemini_model"] = model
+    url = f"https://generativelanguage.googleapis.com/v1beta/{model}:generateContent?key={GEMINI_KEY}"
+    for cfg in ({"temperature": 0.4, "responseMimeType": "application/json"}, {"temperature": 0.4}):
         try:
-            r = requests.post(url, headers={"Content-Type": "application/json"}, json=body, timeout=60)
+            r = requests.post(url, headers={"Content-Type": "application/json"},
+                              json={"contents": [{"parts": [{"text": prompt}]}], "generationConfig": cfg}, timeout=60)
             if r.status_code != 200:
-                last_err = f"{model}:HTTP{r.status_code}:{r.text[:120]}"; continue
-            txt = r.json()["candidates"][0]["content"]["parts"][0]["text"]
-            STATUS["gemini_model"] = model
+                STATUS["gemini_err"] = f"HTTP{r.status_code}:{r.text[:120]}"; continue
+            txt = r.json()["candidates"][0]["content"]["parts"][0]["text"].strip()
+            if txt.startswith("```"):
+                txt = re.sub(r"^```[a-zA-Z]*\n?", "", txt); txt = re.sub(r"\n?```$", "", txt)
             return json.loads(txt)
         except Exception as e:
-            last_err = f"{model}:{type(e).__name__}:{str(e)[:80]}"
-    STATUS["gemini_err"] = last_err
+            STATUS["gemini_err"] = f"{type(e).__name__}:{str(e)[:100]}"
     return None
 
 def gemini_narrative():
