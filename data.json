@@ -43,11 +43,12 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-16T23:38:01.223341+08:00",
+ "updated": "2026-07-17T00:00:02.759925+08:00",
  "status": {
-  "version": "v9",
+  "version": "v10",
   "prices_ok": [
    "taiex",
+   "otc",
    "dow",
    "ndq",
    "spx",
@@ -65,6 +66,7 @@
    "usdtwd"
   ],
   "prices_fail": [],
+  "txf": "ok",
   "taifex": "ok",
   "margin_days": 7,
   "trump_src": {
