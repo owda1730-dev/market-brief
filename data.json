@@ -43,9 +43,9 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-16T22:51:09.024035+08:00",
+ "updated": "2026-07-16T22:59:47.678602+08:00",
  "status": {
-  "version": "v7",
+  "version": "v8",
   "prices_ok": [
    "taiex",
    "kospi",
@@ -64,13 +64,18 @@
   "prices_fail": [],
   "taifex": "ok",
   "margin_days": 7,
-  "truth_count": 15,
+  "trump_src": {
+   "truth": 30,
+   "zhnews": 25,
+   "jin10": "err:HTTPError"
+  },
+  "trump_count": 55,
   "news_counts": {
    "tw": 8,
    "us": 8,
    "jp": 8,
    "kr": 8,
-   "trump": 15
+   "trump": 55
   },
   "gemini_models_avail": [
    "models/gemini-2.5-flash",
