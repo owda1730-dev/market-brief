@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v4 =================
-# 確認方法：data.json 的 status.version 應為 "v4"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v5 =================
+# 確認方法：data.json 的 status.version 應為 "v5"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -456,7 +456,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v4"
+    STATUS["version"] = "v5"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
@@ -508,8 +508,12 @@ def main():
     }
     with open(os.path.join(HERE, "template.html"), encoding="utf-8") as f:
         out = f.read()
+    # 清掉空字元/控制字元（避免瀏覽器 JS 解析中斷、整頁按鈕失效）
+    ctrl = lambda s: re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", s)
+    out = ctrl(out)
     for k, v in tokens.items():
-        out = out.replace("%%" + k + "%%", v)
+        out = out.replace("%%" + k + "%%", str(v))
+    out = ctrl(out)
     with open(os.path.join(HERE, "index.html"), "w", encoding="utf-8") as f:
         f.write(out)
 
