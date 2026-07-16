@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v7 =================
-# 確認方法：data.json 的 status.version 應為 "v7"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v8 =================
+# 確認方法：data.json 的 status.version 應為 "v8"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -253,6 +253,46 @@ def fetch_truth_social(n=15):
             items.append({"date": date, "title": text[:240]})
         if len(items) >= n: break
     return items
+
+def _rss_items(url, must_contain=None, n=10, timeout=15):
+    txt = http_get(url, timeout=timeout)
+    out = []
+    for m in re.finditer(r"<item>(.*?)</item>", txt, re.S):
+        b = m.group(1)
+        t = re.search(r"<title>(.*?)</title>", b, re.S)
+        p = re.search(r"<pubDate>(.*?)</pubDate>", b, re.S)
+        title = html.unescape(re.sub(r"<[^>]*>", " ", t.group(1))).strip() if t else ""
+        title = re.sub(r"\s+", " ", title)
+        if not title: continue
+        if must_contain and not any(k in title for k in must_contain): continue
+        date = ""
+        if p:
+            try: date = datetime.datetime.strptime(p.group(1).strip(), "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y/%m/%d")
+            except Exception: date = ""
+        out.append({"date": date, "title": title[:240]})
+        if len(out) >= n: break
+    return out
+
+def fetch_trump_sources():
+    """多平台合併川普素材：Truth Social 原文 + 中文即時新聞 + 金十(RSSHub 盡力)。"""
+    items = []; src = {}
+    try:
+        ts = fetch_truth_social(30); [it.update(src="TruthSocial") for it in ts]
+        items += ts; src["truth"] = len(ts)
+    except Exception as e: src["truth"] = f"err:{type(e).__name__}"
+    try:
+        zh = gnews("特朗普 OR 川普", en=False, n=25); [it.update(src="中文新聞") for it in zh]
+        items += zh; src["zhnews"] = len(zh)
+    except Exception as e: src["zhnews"] = f"err:{type(e).__name__}"
+    for jurl in ("https://rsshub.app/jin10/telegraph", "https://rsshub.app/jin10"):
+        try:
+            j = _rss_items(jurl, must_contain=["特朗普", "川普", "Trump"], n=8)
+            if j:
+                [it.update(src="金十") for it in j]; items += j; src["jin10"] = len(j); break
+            src["jin10"] = 0
+        except Exception as e: src["jin10"] = f"err:{type(e).__name__}"
+    STATUS["trump_src"] = src
+    return items
 def gnews(query, en=False, n=8):
     hl, gl, ceid = ("en-US","US","US:en") if en else ("zh-TW","TW","TW:zh-Hant")
     url = "https://news.google.com/rss/search?q=" + urllib.parse.quote(query) + f"&hl={hl}&gl={gl}&ceid={ceid}"
@@ -318,13 +358,13 @@ def gemini_narrative():
         try: feeds[k] = gnews(q, en=(k == "trump"))
         except Exception as e:
             feeds[k] = []; STATUS.setdefault("news_err", {})[k] = type(e).__name__
-    # 川普：優先用 trumpstruth.org 的真實 Truth Social 貼文（正確即時日期）
+    # 川普：多平台合併（Truth Social 原文 + 中文即時新聞 + 金十）
     try:
-        ts = fetch_truth_social()
-        STATUS["truth_count"] = len(ts)
-        if ts: feeds["trump"] = ts
+        tsrc = fetch_trump_sources()
+        STATUS["trump_count"] = len(tsrc)
+        if tsrc: feeds["trump"] = tsrc
     except Exception as e:
-        STATUS["truth_err"] = type(e).__name__
+        STATUS["trump_err"] = type(e).__name__
     STATUS["news_counts"] = {k: len(v) for k, v in feeds.items()}
     today = NOW.strftime("%Y/%m/%d")
     prompt = f"""你是台灣財經編輯。今天 {today}（台北）。以下為各市場新聞標題與日期（Google News RSS）。
@@ -333,7 +373,7 @@ def gemini_narrative():
 "trump":[{{"date":"YYYY/MM/DD","tag":"關稅/對Fed/突發/股市看法/人事/外交/其他","text":"重點","impact":"影響哪類資產","alert":true}}],
 "watch":["值得關注1"],"interp":"即時行情綜合解讀一段"}}
 規則：每則標確切日期，無法確定寫「日期未確認」不可捏造；tw/us 各3-4則、jp/kr 各2-3則、watch 6-7條。
-trump 區塊：素材中的 trump 是川普 Truth Social 的真實貼文（含實際發文日期），請「只根據這些貼文」摘要，**用貼文的實際日期**、時間倒序（最新在最前），挑最近且與市場/政策相關的 4-6 則，忠實不杜撰引文；最具市場衝擊的一則 alert=true。
+trump 區塊：素材中的 trump 來自川普 Truth Social 原文與中文即時新聞（含金十等），皆附實際日期。請「只根據這些素材」摘要，**用素材的實際日期**、時間倒序（最新在最前），盡量挑出最近與市場/政策相關者、**最多 20 則**（有多少湊多少、不要杜撰補足），忠實不杜撰引文；最具市場衝擊的一則 alert=true。
 素材：{json.dumps(feeds, ensure_ascii=False)}"""
     return gemini_call(prompt)
 
@@ -446,16 +486,24 @@ def render_trump(nar):
     items = (nar or {}).get("trump") or []
     if not items:
         return '<div class="date-tag">時間倒序（最新在上）</div><div class="note">今日暫無擷取到川普相關發言，稍後自動更新。</div>'
-    out = ['<div class="date-tag">時間倒序（最新在上）· 每則標日期與類型 · 市場衝擊最大者置頂</div>']
-    for a in [x for x in items if x.get("alert")][:1]:
-        out.append('<div class="alert"><span class="lbl">🚨 突發 · 市場衝擊大</span>'
-                   f'<div class="tp" style="border:none;padding-left:0"><span class="d">{html.escape(str(a.get("date","")))}</span> — {html.escape(str(a.get("text","")))}'
-                   f'<div class="imp">🏷 {html.escape(str(a.get("tag","")))} · 影響：{html.escape(str(a.get("impact","")))}</div></div></div>')
-    for t in [x for x in items if not x.get("alert")]:
-        out.append(f'<div class="tp"><span class="d">{html.escape(str(t.get("date","")))}</span>'
-                   f'<span class="tag">{html.escape(str(t.get("tag","其他")))}</span> — {html.escape(str(t.get("text","")))}'
-                   f'<div class="imp">影響：{html.escape(str(t.get("impact","")))}</div></div>')
-    out.append('<div class="note">時間倒序、以川普 Truth Social 實際貼文為準；查無確切日期者標「日期未確認」。</div>')
+    def dkey(x):
+        d = re.sub(r"\D", "", str(x.get("date", "")))
+        return d if len(d) >= 6 else "00000000"
+    items = sorted(items, key=dkey, reverse=True)[:20]   # 依日期新到舊、最多20則
+    out = ['<div class="date-tag">依日期由新到舊（最新在最上）· 最多累積 20 則</div>']
+    for t in items:
+        d = html.escape(str(t.get("date", "")))
+        tag = html.escape(str(t.get("tag", "其他")))
+        text = html.escape(str(t.get("text", "")))
+        imp = html.escape(str(t.get("impact", "")))
+        if t.get("alert"):
+            out.append(f'<div class="alert"><span class="lbl">🚨 市場衝擊大</span>'
+                       f'<div class="tp" style="border:none;padding-left:0"><span class="d">{d}</span> <span class="tag">{tag}</span> — {text}'
+                       f'<div class="imp">影響：{imp}</div></div></div>')
+        else:
+            out.append(f'<div class="tp"><span class="d">{d}</span><span class="tag">{tag}</span> — {text}'
+                       f'<div class="imp">影響：{imp}</div></div>')
+    out.append('<div class="note">依日期排序、以川普 Truth Social 與即時新聞為準；查無確切日期者標「日期未確認」。</div>')
     return "".join(out)
 
 def render_watch(nar):
@@ -484,7 +532,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v7"
+    STATUS["version"] = "v8"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
