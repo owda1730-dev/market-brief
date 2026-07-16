@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v9 =================
-# 確認方法：data.json 的 status.version 應為 "v9"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v10 =================
+# 確認方法：data.json 的 status.version 應為 "v10"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -9,6 +9,17 @@
 import os, sys, json, re, io, csv, html, time, datetime, traceback
 import urllib.parse
 import requests
+from email.utils import parsedate_to_datetime
+
+def rss_tw(pubdate):
+    """RSS pubDate -> (台北日期 YYYY/MM/DD, 台北時間 HH:MM)。"""
+    try:
+        dt = parsedate_to_datetime((pubdate or "").strip())
+        if dt.tzinfo is None: dt = dt.replace(tzinfo=datetime.timezone.utc)
+        dt = dt.astimezone(datetime.timezone(datetime.timedelta(hours=8)))
+        return dt.strftime("%Y/%m/%d"), dt.strftime("%H:%M")
+    except Exception:
+        return "", ""
 
 TZ = datetime.timezone(datetime.timedelta(hours=8))
 NOW = datetime.datetime.now(TZ)
@@ -40,7 +51,7 @@ def mmdd(iso):
 # ===========================================================================
 YF = "https://query1.finance.yahoo.com/v8/finance/chart/{s}?range=1y&interval=1d"
 YAHOO_SYMBOLS = {
-    "taiex":"^TWII","dow":"^DJI","ndq":"^IXIC","spx":"^GSPC","sox":"^SOX",
+    "taiex":"^TWII","otc":"^TWOII","dow":"^DJI","ndq":"^IXIC","spx":"^GSPC","sox":"^SOX",
     "kospi":"^KS11","nikkei":"^N225","hsi":"^HSI","sse":"000001.SS",
     "dxy":"DX-Y.NYB","wti":"CL=F","brent":"BZ=F","gold":"GC=F","us10y":"^TNX","vix":"^VIX","usdtwd":"TWD=X",
 }
@@ -164,6 +175,37 @@ def fetch_prices():
 # ===========================================================================
 # 期交所三大法人（臺股期貨 未平倉多空淨額「口數」= 倒數第二個數字欄）
 # ===========================================================================
+def fetch_txf():
+    """台指期近月 開/收（期交所 OpenAPI，盡力；失敗回 None）。"""
+    j = http_get("https://openapi.taifex.com.tw/v1/DailyMarketReportFut", is_json=True, timeout=25)
+    if not isinstance(j, list) or not j:
+        STATUS["txf"] = "empty"; return None
+    cands = []
+    for r in j:
+        name = str(r.get("Contract") or r.get("ContractName") or r.get("商品代號") or r.get("契約") or "")
+        if name.strip().upper() in ("TX", "TXF") or "臺股期貨" in name or "台股期貨" in name:
+            cm = str(r.get("ContractMonth(Week)") or r.get("到期月份(週別)") or r.get("ContractMonth") or "")
+            if "/" in cm or "W" in cm.upper(): continue   # 跳過價差/週選
+            cands.append((cm, r))
+    if not cands:
+        STATUS["txf"] = "no-tx:" + json.dumps(j[0], ensure_ascii=False)[:180]; return None
+    cands.sort(key=lambda x: x[0]); r = cands[0][1]
+    def num(*keys):
+        for k in keys:
+            try:
+                f = float(str(r.get(k)).replace(",", ""))
+                if f > 0: return f
+            except Exception: pass
+        return None
+    op = num("Open", "OpeningPrice", "開盤價")
+    cl = num("Close", "ClosingPrice", "Last", "收盤價", "最後成交價", "SettlementPrice", "結算價")
+    dt = str(r.get("Date") or r.get("交易日期") or "")
+    dt = re.sub(r"[^\d]", "-", dt)[:10] if dt else NOW.date().isoformat()
+    if op and cl:
+        STATUS["txf"] = "ok"
+        return {"last": cl, "open": op, "prev": cl, "lo": cl, "hi": cl, "date": dt}
+    STATUS["txf"] = "parsefail:" + json.dumps(r, ensure_ascii=False)[:180]; return None
+
 def fetch_taifex():
     import pandas as pd
     txt = http_get("https://www.taifex.com.tw/cht/3/futContractsDateExcel", timeout=25)
@@ -266,12 +308,9 @@ def fetch_truth_social(n=15):
         raw = (d.group(1) if d else (t.group(1) if t else ""))
         text = html.unescape(re.sub(r"<[^>]*>", " ", raw)).strip()
         text = re.sub(r"\s+", " ", text)
-        date = ""
-        if p:
-            try: date = datetime.datetime.strptime(p.group(1).strip(), "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y/%m/%d")
-            except Exception: date = ""
+        date, tm = rss_tw(p.group(1)) if p else ("", "")
         if text and len(text) > 3:
-            items.append({"date": date, "title": text[:240]})
+            items.append({"date": date, "time": tm, "title": text[:240]})
         if len(items) >= n: break
     return items
 
@@ -286,11 +325,8 @@ def _rss_items(url, must_contain=None, n=10, timeout=15):
         title = re.sub(r"\s+", " ", title)
         if not title: continue
         if must_contain and not any(k in title for k in must_contain): continue
-        date = ""
-        if p:
-            try: date = datetime.datetime.strptime(p.group(1).strip(), "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y/%m/%d")
-            except Exception: date = ""
-        out.append({"date": date, "title": title[:240]})
+        date, tm = rss_tw(p.group(1)) if p else ("", "")
+        out.append({"date": date, "time": tm, "title": title[:240]})
         if len(out) >= n: break
     return out
 
@@ -324,11 +360,8 @@ def gnews(query, en=False, n=8):
         t = re.search(r"<title>(.*?)</title>", b, re.S)
         p = re.search(r"<pubDate>(.*?)</pubDate>", b, re.S)
         title = html.unescape(re.sub(r"<.*?>", "", t.group(1)).strip()) if t else ""
-        pub = ""
-        if p:
-            try: pub = datetime.datetime.strptime(p.group(1).strip(), "%a, %d %b %Y %H:%M:%S %Z").strftime("%m/%d")
-            except Exception: pub = ""
-        if title: items.append({"date": pub, "title": title})
+        d2, t2 = rss_tw(p.group(1)) if p else ("", "")
+        if title: items.append({"date": d2, "time": t2, "title": title})
         if len(items) >= n: break
     return items
 
@@ -391,10 +424,10 @@ def gemini_narrative():
     prompt = f"""你是台灣財經編輯。今天 {today}（台北）。以下為各市場新聞標題與日期（Google News RSS）。
 只根據這些標題，用繁體中文輸出 JSON（不要多餘文字）：
 {{"news":{{"tw":[{{"date":"MM/DD","text":"重點"}}],"us":[...],"jp":[...],"kr":[...]}},
-"trump":[{{"date":"YYYY/MM/DD","tag":"關稅/對Fed/突發/股市看法/人事/外交/其他","text":"重點","impact":"影響哪類資產","alert":true}}],
+"trump":[{{"date":"YYYY/MM/DD","time":"HH:MM","tag":"關稅/對Fed/突發/股市看法/人事/外交/其他","text":"重點","impact":"影響哪類資產","alert":true}}],
 "watch":["值得關注1"],"interp":"即時行情綜合解讀一段"}}
 規則：每則標確切日期，無法確定寫「日期未確認」不可捏造；tw/us 各3-4則、jp/kr 各2-3則、watch 6-7條。
-trump 區塊：素材中的 trump 來自川普 Truth Social 原文與中文即時新聞（含金十等），皆附實際日期。請「只根據這些素材」摘要，**用素材的實際日期**、時間倒序（最新在最前），盡量挑出最近與市場/政策相關者、**最多 20 則**（有多少湊多少、不要杜撰補足），忠實不杜撰引文；最具市場衝擊的一則 alert=true。
+trump 區塊：素材中的 trump 來自川普 Truth Social 原文與中文即時新聞（含金十等），皆附實際日期。請「只根據這些素材」摘要，**用素材的實際日期**、時間倒序（最新在最前），盡量挑出最近與市場/政策相關者、**最多 20 則**（有多少湊多少、不要杜撰補足），忠實不杜撰引文；最具市場衝擊的一則 alert=true。time 欄請直接沿用素材提供的時間（已換算為台北時間 GMT+8），不可自行推算或杜撰，素材無時間則留空。
 素材：{json.dumps(feeds, ensure_ascii=False)}"""
     return gemini_call(prompt)
 
@@ -417,7 +450,7 @@ DEFAULTS = {
 # ===========================================================================
 # 渲染
 # ===========================================================================
-IDX_ROWS = [("台灣加權","taiex"),
+IDX_ROWS = [("台指近","txf"),("櫃買指數","otc"),("台灣加權","taiex"),
             ("道瓊工業","dow"),("NASDAQ","ndq"),("S&amp;P 500","spx"),("費城半導體","sox"),
             ("韓國股市","kospi"),("日本股市","nikkei"),
             ("香港恒生","hsi"),("上證指數","sse")]
@@ -427,14 +460,17 @@ def render_index(prices):
         p = prices.get(key)
         if not p:
             rows.append(f'<tr><td>{name}</td><td class="sub">待更新</td><td class="sub">—</td><td class="sub">—</td><td class="sub">—</td></tr>'); continue
+        op = p.get("open"); cl = p["last"]
+        base = op if op else p["prev"]
+        chg = cl - base; pct = chg/base*100 if base else 0; c = cls(chg)
         any_ok = True
-        base = p.get("open") or p["prev"]   # 當日開盤（無開盤價時退回前一交易日收盤）
-        chg = p["last"] - base; pct = chg/base*100 if base else 0; c = cls(chg)
-        rows.append(f'<tr><td>{name}</td><td>{comma(p["last"])}</td><td class="{c}">{arrow(chg)}{comma(abs(chg))}</td>'
-                    f'<td class="{c}">{sign(pct)}%</td><td class="sub">{mmdd(p["date"])}</td></tr>')
-    note = "漲跌＝當日收盤−當日開盤；紅漲綠跌，各列標資料日。" if any_ok else "⚠️ 指數當日暫時抓取失敗，稍後自動重試即會恢復。"
-    return (f'<div class="date-tag">各指數當日開盤→收盤（資料日見每列）</div><table>'
-            f'<tr><th>指數</th><th>收盤</th><th>漲跌</th><th>幅度</th><th>資料日</th></tr>'
+        rows.append(f'<tr><td>{name}<br><span class="sub">{mmdd(p["date"])}</span></td>'
+                    f'<td>{comma(op) if op else "—"}</td><td>{comma(cl)}</td>'
+                    f'<td class="{c}">{arrow(chg)}{comma(abs(chg))}</td>'
+                    f'<td class="{c}">{sign(pct)}%</td></tr>')
+    note = "漲跌＝當日收盤−開盤；紅漲綠跌。台指近／櫃買若當日未取得會標待更新。" if any_ok else "⚠️ 指數當日暫時抓取失敗，稍後自動重試即會恢復。"
+    return (f'<div class="date-tag">各指數當日開盤與收盤（每列標資料日）</div><table>'
+            f'<tr><th>指數</th><th>開盤</th><th>收盤</th><th>漲跌</th><th>幅度</th></tr>'
             + "".join(rows) + f'</table><div class="note">{note}</div>')
 
 def render_futures(fut_hist):
@@ -512,22 +548,24 @@ def render_trump(nar):
         return '<div class="date-tag">時間倒序（最新在上）</div><div class="note">今日暫無擷取到川普相關發言，稍後自動更新。</div>'
     def dkey(x):
         d = re.sub(r"\D", "", str(x.get("date", "")))
-        return d if len(d) >= 6 else "00000000"
-    items = sorted(items, key=dkey, reverse=True)[:20]   # 依日期新到舊、最多20則
-    out = ['<div class="date-tag">依日期由新到舊（最新在最上）· 最多累積 20 則</div>']
+        t = re.sub(r"\D", "", str(x.get("time", "")))
+        return (d if len(d) >= 6 else "00000000") + (t.ljust(4, "0")[:4] if t else "0000")
+    items = sorted(items, key=dkey, reverse=True)[:20]   # 依日期時間新到舊、最多20則
+    out = ['<div class="date-tag">依時間由新到舊（最新在最上）· 時間為台灣時間 · 最多累積 20 則</div>']
     for t in items:
-        d = html.escape(str(t.get("date", "")))
+        d = str(t.get("date", "")); tm = str(t.get("time", ""))
+        dt = html.escape((d + " " + tm).strip())
         tag = html.escape(str(t.get("tag", "其他")))
         text = html.escape(str(t.get("text", "")))
         imp = html.escape(str(t.get("impact", "")))
         if t.get("alert"):
             out.append(f'<div class="alert"><span class="lbl">🚨 市場衝擊大</span>'
-                       f'<div class="tp" style="border:none;padding-left:0"><span class="d">{d}</span> <span class="tag">{tag}</span> — {text}'
+                       f'<div class="tp" style="border:none;padding-left:0"><span class="d">{dt}</span> <span class="tag">{tag}</span> — {text}'
                        f'<div class="imp">影響：{imp}</div></div></div>')
         else:
-            out.append(f'<div class="tp"><span class="d">{d}</span><span class="tag">{tag}</span> — {text}'
+            out.append(f'<div class="tp"><span class="d">{dt}</span><span class="tag">{tag}</span> — {text}'
                        f'<div class="imp">影響：{imp}</div></div>')
-    out.append('<div class="note">依日期排序、以川普 Truth Social 與即時新聞為準；查無確切日期者標「日期未確認」。</div>')
+    out.append('<div class="note">依時間排序（台灣時間 GMT+8）、以川普 Truth Social 與即時新聞為準；查無確切時間者僅標日期或「未確認」。</div>')
     return "".join(out)
 
 def render_watch(nar):
@@ -556,7 +594,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v9"
+    STATUS["version"] = "v10"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
@@ -566,6 +604,10 @@ def main():
     prices = {}
     try: prices = fetch_prices()
     except Exception as e: STATUS["prices_exc"] = repr(e); traceback.print_exc()
+    try:
+        _t = fetch_txf()
+        if _t: prices["txf"] = _t
+    except Exception as e: STATUS["txf"] = f"exc:{type(e).__name__}"
 
     fut = None
     try: fut = fetch_taifex(); STATUS["taifex"] = "ok"
