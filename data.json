@@ -43,16 +43,19 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-16T23:03:17.428062+08:00",
+ "updated": "2026-07-16T23:25:03.844572+08:00",
  "status": {
-  "version": "v8",
+  "version": "v9",
   "prices_ok": [
    "taiex",
-   "kospi",
-   "nikkei",
-   "sox",
+   "dow",
    "ndq",
    "spx",
+   "sox",
+   "kospi",
+   "nikkei",
+   "hsi",
+   "sse",
    "dxy",
    "wti",
    "brent",
@@ -104,6 +107,6 @@
    "models/nano-banana-pro-preview",
    "models/gemini-3.1-flash-image-preview"
   ],
-  "gemini_model": "models/gemini-3.1-flash-lite"
+  "gemini_model": "models/gemini-3-flash-preview"
  }
 }
