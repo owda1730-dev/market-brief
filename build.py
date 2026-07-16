@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v6 =================
-# 確認方法：data.json 的 status.version 應為 "v6"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v7 =================
+# 確認方法：data.json 的 status.version 應為 "v7"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -232,6 +232,27 @@ def fetch_bot_usdtwd():
 NEWS_FEEDS = {"tw":"台股 加權指數", "us":"美股 標普 那斯達克 半導體",
               "jp":"日經 225 東京股市", "kr":"KOSPI 韓國股市",
               "trump":"Trump tariffs oil Fed stock market"}
+
+def fetch_truth_social(n=15):
+    """抓 trumpstruth.org 的川普 Truth Social 貼文 RSS（真實即時、正確日期）。"""
+    txt = http_get("https://trumpstruth.org/feed", timeout=20)
+    items = []
+    for m in re.finditer(r"<item>(.*?)</item>", txt, re.S):
+        b = m.group(1)
+        d = re.search(r"<description>(.*?)</description>", b, re.S)
+        t = re.search(r"<title>(.*?)</title>", b, re.S)
+        p = re.search(r"<pubDate>(.*?)</pubDate>", b, re.S)
+        raw = (d.group(1) if d else (t.group(1) if t else ""))
+        text = html.unescape(re.sub(r"<[^>]*>", " ", raw)).strip()
+        text = re.sub(r"\s+", " ", text)
+        date = ""
+        if p:
+            try: date = datetime.datetime.strptime(p.group(1).strip(), "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y/%m/%d")
+            except Exception: date = ""
+        if text and len(text) > 3:
+            items.append({"date": date, "title": text[:240]})
+        if len(items) >= n: break
+    return items
 def gnews(query, en=False, n=8):
     hl, gl, ceid = ("en-US","US","US:en") if en else ("zh-TW","TW","TW:zh-Hant")
     url = "https://news.google.com/rss/search?q=" + urllib.parse.quote(query) + f"&hl={hl}&gl={gl}&ceid={ceid}"
@@ -297,6 +318,13 @@ def gemini_narrative():
         try: feeds[k] = gnews(q, en=(k == "trump"))
         except Exception as e:
             feeds[k] = []; STATUS.setdefault("news_err", {})[k] = type(e).__name__
+    # 川普：優先用 trumpstruth.org 的真實 Truth Social 貼文（正確即時日期）
+    try:
+        ts = fetch_truth_social()
+        STATUS["truth_count"] = len(ts)
+        if ts: feeds["trump"] = ts
+    except Exception as e:
+        STATUS["truth_err"] = type(e).__name__
     STATUS["news_counts"] = {k: len(v) for k, v in feeds.items()}
     today = NOW.strftime("%Y/%m/%d")
     prompt = f"""你是台灣財經編輯。今天 {today}（台北）。以下為各市場新聞標題與日期（Google News RSS）。
@@ -304,8 +332,8 @@ def gemini_narrative():
 {{"news":{{"tw":[{{"date":"MM/DD","text":"重點"}}],"us":[...],"jp":[...],"kr":[...]}},
 "trump":[{{"date":"YYYY/MM/DD","tag":"關稅/對Fed/突發/股市看法/人事/外交/其他","text":"重點","impact":"影響哪類資產","alert":true}}],
 "watch":["值得關注1"],"interp":"即時行情綜合解讀一段"}}
-規則：每則標確切日期，無法確定寫「日期未確認」不可捏造；tw/us 各3-4則、jp/kr 各2-3則、trump 3-6則(時間倒序)、watch 6-7條；
-最具市場衝擊的 trump 一則 alert=true。忠實不杜撰引文。
+規則：每則標確切日期，無法確定寫「日期未確認」不可捏造；tw/us 各3-4則、jp/kr 各2-3則、watch 6-7條。
+trump 區塊：素材中的 trump 是川普 Truth Social 的真實貼文（含實際發文日期），請「只根據這些貼文」摘要，**用貼文的實際日期**、時間倒序（最新在最前），挑最近且與市場/政策相關的 4-6 則，忠實不杜撰引文；最具市場衝擊的一則 alert=true。
 素材：{json.dumps(feeds, ensure_ascii=False)}"""
     return gemini_call(prompt)
 
@@ -313,7 +341,7 @@ def gemini_narrative():
 # DEFAULTS（全失敗時後備）
 # ===========================================================================
 DEFAULTS = {
-  "TOP_NOTE": "🗓️ 本頁由 GitHub Actions 每日自動更新。數字取自 Yahoo Finance／期交所／證交所／臺灣銀行，新聞與川普發言由 Google News＋Gemini 自動整理。某來源當日未釋出時，該區塊標示待更新、不以估值填充。",
+  "TOP_NOTE": "🗓️ 本頁每日自動更新。某項當日資料尚未釋出時，該區塊標示待更新、不以估值填充。",
   "RT_JSON": json.dumps([
     {"n":"美元指數 DXY","q":"—","chg":"—","dir":"flat","lo":95.55,"hi":101.80,"cur":98,"est":True},
     {"n":"USD/TWD 新台幣","q":"—","chg":"—","dir":"flat","lo":29.0,"hi":33.0,"cur":31,"est":True},
@@ -340,7 +368,7 @@ def render_index(prices):
         chg = p["last"] - p["prev"]; pct = chg/p["prev"]*100 if p["prev"] else 0; c = cls(chg)
         rows.append(f'<tr><td>{name}</td><td>{comma(p["last"])}</td><td class="{c}">{arrow(chg)}{comma(abs(chg))}</td>'
                     f'<td class="{c}">{sign(pct)}%</td><td class="sub">{mmdd(p["date"])}</td></tr>')
-    note = "指數行情來源：Yahoo Finance（備援 Stooq）。各列標資料日；紅漲綠跌。" if any_ok else "⚠️ 指數來源當日暫時抓取失敗，稍後排程重跑即會恢復。"
+    note = "各列標資料日；紅漲綠跌。" if any_ok else "⚠️ 指數當日暫時抓取失敗，稍後自動重試即會恢復。"
     return (f'<div class="date-tag">各指數收盤（資料日見每列）</div><table>'
             f'<tr><th>指數</th><th>收盤</th><th>漲跌</th><th>幅度</th><th>資料日</th></tr>'
             + "".join(rows) + f'</table><div class="note">{note}</div>')
@@ -374,7 +402,7 @@ def render_futures(fut_hist):
     st = ('<div class="subtabs" id="futSub"><div class="subtab active" data-s="f-all">全部</div>'
           '<div class="subtab" data-s="f-sum">法人</div><div class="subtab" data-s="f-fore">外資</div>'
           '<div class="subtab" data-s="f-trust">投信</div><div class="subtab" data-s="f-deal">自營商</div></div>')
-    return (f'<div class="date-tag">臺股期貨 · 單位：口 · 綠＝淨空／減，紅＝淨多／增 · 資料源：期交所（最新 {mmdd(d0)}）</div>' + st +
+    return (f'<div class="date-tag">臺股期貨 · 單位：口 · 綠＝淨空／減，紅＝淨多／增 · 最新 {mmdd(d0)}</div>' + st +
             f'<div class="subpage active" id="f-all"><div class="date-tag">{mmdd(d0)} 盤後 · 「較前日」＝對比 {mmdd(dates[1]) if len(dates)>1 else "—"}</div>'
             f'<table><tr><th>法人</th><th>未平倉淨額(口)</th><th>較前日增減</th><th>方向</th></tr>{all_rows}</table></div>'
             f'<div class="subpage" id="f-sum"><div class="date-tag">法人合計 · 近五個交易日</div><table>{h5}{five("total")}</table></div>'
@@ -399,7 +427,7 @@ def render_margin(mgn_hist):
         rows.append(f'<tr><td>{mmdd(d)}</td><td>{comma(cur["margin_yi"])}</td>{dmc}<td>{format(cur["short_zhang"],",")}</td>{dsc}</tr>')
     return (f'<div class="date-tag">集中市場 · 近五個交易日（最新 {mmdd(dates[0])}）</div>'
             f'<table><tr><th>日期</th><th>融資(億)</th><th>日增減</th><th>融券(張)</th><th>日增減</th></tr>' + "".join(rows) + '</table>'
-            '<div class="note">資料源：證交所 TWSE。融資增加(紅)＝散戶槓桿升溫；融券下降(綠)＝放空回補、降溫。</div>')
+            '<div class="note">融資增加(紅)＝散戶槓桿升溫；融券下降(綠)＝放空回補、降溫。</div>')
 
 def render_news(nar):
     news = (nar or {}).get("news") or {}
@@ -427,7 +455,7 @@ def render_trump(nar):
         out.append(f'<div class="tp"><span class="d">{html.escape(str(t.get("date","")))}</span>'
                    f'<span class="tag">{html.escape(str(t.get("tag","其他")))}</span> — {html.escape(str(t.get("text","")))}'
                    f'<div class="imp">影響：{html.escape(str(t.get("impact","")))}</div></div>')
-    out.append('<div class="note">來源：Google News（Reuters／CNBC／Bloomberg／AP 等）＋Gemini 自動整理；查無確切日期者標「日期未確認」，不杜撰引文。</div>')
+    out.append('<div class="note">時間倒序、以川普 Truth Social 實際貼文為準；查無確切日期者標「日期未確認」。</div>')
     return "".join(out)
 
 def render_watch(nar):
@@ -451,12 +479,12 @@ def render_rt(prices):
       item("黃金","gold",di=4), item("美 10Y 公債殖利率","us10y",is_pct=True,money=False,di=5),
       item("VIX 波動率","vix",money=False,di=6),
     ]
-    tag = f'報價來源 Yahoo Finance／臺灣銀行；資料日 {NOW.strftime("%m/%d")}；位階＝52 週高低區間百分位'
+    tag = f'資料日 {NOW.strftime("%m/%d")}；位階＝52 週高低區間百分位'
     return json.dumps(rt, ensure_ascii=False), tag
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v6"
+    STATUS["version"] = "v7"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
@@ -511,6 +539,7 @@ def main():
     # 清掉空字元/控制字元（避免瀏覽器 JS 解析中斷、整頁按鈕失效）
     ctrl = lambda s: re.sub(r"[\x00-\x08\x0b\x0c\x0e-\x1f]", "", s)
     out = ctrl(out)
+    out = re.sub(r"\s*<b>資料來源：</b>.*?<br>", "", out, flags=re.S)  # 移除頁尾來源標註
     for k, v in tokens.items():
         out = out.replace("%%" + k + "%%", str(v))
     out = ctrl(out)
