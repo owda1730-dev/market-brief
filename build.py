@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v5 =================
-# 確認方法：data.json 的 status.version 應為 "v5"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v6 =================
+# 確認方法：data.json 的 status.version 應為 "v6"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -456,7 +456,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v5"
+    STATUS["version"] = "v6"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
@@ -514,6 +514,16 @@ def main():
     for k, v in tokens.items():
         out = out.replace("%%" + k + "%%", str(v))
     out = ctrl(out)
+    # 自我修復：若樣板結尾被截斷（沒有 </html>），補回完整的 JS 結尾與收尾標籤
+    if "</html>" not in out:
+        out = out.rstrip()
+        if not out.rstrip().endswith("</div></div>'+"):
+            out += (":'+pct+'%\"></div></div>'+\n"
+                    "      '<div class=\"bar-lbl\"><span>低 '+fmt(r.lo)+'</span><span>52週區間'+(r.est?'（估）':'')+'</span><span>高 '+fmt(r.hi)+'</span></div>'+\n"
+                    "    '</div>');\n")
+        out += ("});\n"
+                "if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('./sw.js').catch(function(){});});}\n"
+                "</script>\n</body>\n</html>\n")
     with open(os.path.join(HERE, "index.html"), "w", encoding="utf-8") as f:
         f.write(out)
 
