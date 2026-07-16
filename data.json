@@ -43,7 +43,7 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-16T22:59:47.678602+08:00",
+ "updated": "2026-07-16T23:03:17.428062+08:00",
  "status": {
   "version": "v8",
   "prices_ok": [
@@ -104,6 +104,6 @@
    "models/nano-banana-pro-preview",
    "models/gemini-3.1-flash-image-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-3.1-flash-lite"
  }
 }
