@@ -14,6 +14,10 @@
   }
  },
  "margin": {
+  "2026-07-16": {
+   "margin_yi": 6155.76,
+   "short_zhang": 176622
+  },
   "2026-07-15": {
    "margin_yi": 6153.68,
    "short_zhang": 173131
@@ -39,9 +43,9 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-16T15:38:28.700632+08:00",
+ "updated": "2026-07-16T21:21:41.461856+08:00",
  "status": {
-  "version": "v4",
+  "version": "v5",
   "prices_ok": [
    "taiex",
    "kospi",
@@ -59,7 +63,8 @@
   ],
   "prices_fail": [],
   "taifex": "ok",
-  "margin_days": 6,
+  "margin_exc": "JSONDecodeError",
+  "margin_days": 7,
   "news_counts": {
    "tw": 8,
    "us": 8,
@@ -94,6 +99,6 @@
    "models/nano-banana-pro-preview",
    "models/gemini-3.1-flash-image-preview"
   ],
-  "gemini_model": "models/gemini-flash-latest"
+  "gemini_model": "models/gemini-3-flash-preview"
  }
 }
