@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v8 =================
-# 確認方法：data.json 的 status.version 應為 "v8"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v9 =================
+# 確認方法：data.json 的 status.version 應為 "v9"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -40,37 +40,50 @@ def mmdd(iso):
 # ===========================================================================
 YF = "https://query1.finance.yahoo.com/v8/finance/chart/{s}?range=1y&interval=1d"
 YAHOO_SYMBOLS = {
-    "taiex":"^TWII","kospi":"^KS11","nikkei":"^N225","sox":"^SOX","ndq":"^IXIC","spx":"^GSPC",
+    "taiex":"^TWII","dow":"^DJI","ndq":"^IXIC","spx":"^GSPC","sox":"^SOX",
+    "kospi":"^KS11","nikkei":"^N225","hsi":"^HSI","sse":"000001.SS",
     "dxy":"DX-Y.NYB","wti":"CL=F","brent":"BZ=F","gold":"GC=F","us10y":"^TNX","vix":"^VIX","usdtwd":"TWD=X",
 }
 STOOQ_SYMBOLS = {  # 備援
-    "taiex":"^twse","kospi":"^kospi","nikkei":"^nkx","sox":"^sox","ndq":"^ndq","spx":"^spx",
+    "taiex":"^twse","dow":"^dji","ndq":"^ndq","spx":"^spx","sox":"^sox",
+    "kospi":"^kospi","nikkei":"^nkx","hsi":"^hsi","sse":"^shc",
     "wti":"cl.f","brent":"cb.f","gold":"xauusd","vix":"^vix","usdtwd":"usdtwd",
 }
 
-def _pack(closes_dates, key):
-    closes = [(d, c) for d, c in closes_dates if c is not None]
-    if len(closes) < 2: return None
-    last = closes[-1][1]; prev = closes[-2][1]
-    window = [c for _, c in closes[-252:]]
+def _pack(rows, key):
+    # rows = list of (date, close, open)
+    rows = [(d, c, o) for d, c, o in rows if c is not None]
+    if len(rows) < 2: return None
+    last = rows[-1][1]; prev = rows[-2][1]; op = rows[-1][2]
+    window = [c for _, c, _ in rows[-252:]]
     if key == "us10y" and last and last > 20:      # ^TNX 有時以 ×10 報價
-        last, prev = last/10.0, prev/10.0; window = [c/10.0 for c in window]
-    return {"last": last, "prev": prev, "lo": min(window), "hi": max(window), "date": closes[-1][0]}
+        last, prev = last/10.0, prev/10.0
+        op = op/10.0 if op else op
+        window = [c/10.0 for c in window]
+    return {"last": last, "open": op, "prev": prev, "lo": min(window), "hi": max(window), "date": rows[-1][0]}
 
 def _parse_yahoo(j, key):
     res = j["chart"]["result"][0]
     ts = res.get("timestamp") or []
-    closes = res["indicators"]["quote"][0]["close"]
-    cd = [(datetime.datetime.utcfromtimestamp(ts[i]).date().isoformat() if i < len(ts) else "", c)
-          for i, c in enumerate(closes)]
-    return _pack(cd, key)
+    q = res["indicators"]["quote"][0]
+    closes = q.get("close") or []
+    opens = q.get("open") or []
+    rows = []
+    for i, c in enumerate(closes):
+        d = datetime.datetime.utcfromtimestamp(ts[i]).date().isoformat() if i < len(ts) else ""
+        o = opens[i] if i < len(opens) else None
+        rows.append((d, c, o))
+    return _pack(rows, key)
 
 def _parse_stooq(txt, key):
-    cd = []
+    rows = []
     for r in csv.DictReader(io.StringIO(txt)):
-        try: cd.append((r["Date"], float(r["Close"])))
+        try:
+            o = r.get("Open")
+            o = float(o) if o not in (None, "", "N/A") else None
+            rows.append((r["Date"], float(r["Close"]), o))
         except Exception: pass
-    return _pack(cd, key)
+    return _pack(rows, key)
 
 def fetch_prices_yf():
     """yfinance 批次下載（一次請求、自動處理 Yahoo 驗證，較不易被 429）。"""
@@ -85,9 +98,17 @@ def fetch_prices_yf():
             sub = df[sym] if sym in lvl0 else (df if len(syms) == 1 else None)
             if sub is None or "Close" not in sub:
                 diag[key] = "yfin:no-col"; continue
-            s = sub["Close"].dropna()
-            cd = [(idx.date().isoformat(), float(v)) for idx, v in s.items()]
-            got = _pack(cd, key)
+            cser = sub["Close"]; oser = sub["Open"] if "Open" in sub else None
+            rows = []
+            for idx, cv in cser.items():
+                if cv is None or cv != cv: continue
+                ov = None
+                if oser is not None:
+                    try:
+                        v = oser.loc[idx]; ov = None if (v is None or v != v) else float(v)
+                    except Exception: ov = None
+                rows.append((idx.date().isoformat(), float(cv), ov))
+            got = _pack(rows, key)
             if got: got["src"] = "yfin"; out[key] = got
             else: diag[key] = "yfin:parse-none"
         except Exception as e:
@@ -396,8 +417,10 @@ DEFAULTS = {
 # ===========================================================================
 # 渲染
 # ===========================================================================
-IDX_ROWS = [("台灣加權","taiex"),("韓國股市","kospi"),("日本股市","nikkei"),
-            ("費城半導體","sox"),("NASDAQ","ndq"),("S&amp;P 500","spx")]
+IDX_ROWS = [("台灣加權","taiex"),
+            ("道瓊工業","dow"),("NASDAQ","ndq"),("S&amp;P 500","spx"),("費城半導體","sox"),
+            ("韓國股市","kospi"),("日本股市","nikkei"),
+            ("香港恒生","hsi"),("上證指數","sse")]
 def render_index(prices):
     rows = []; any_ok = False
     for name, key in IDX_ROWS:
@@ -405,11 +428,12 @@ def render_index(prices):
         if not p:
             rows.append(f'<tr><td>{name}</td><td class="sub">待更新</td><td class="sub">—</td><td class="sub">—</td><td class="sub">—</td></tr>'); continue
         any_ok = True
-        chg = p["last"] - p["prev"]; pct = chg/p["prev"]*100 if p["prev"] else 0; c = cls(chg)
+        base = p.get("open") or p["prev"]   # 當日開盤（無開盤價時退回前一交易日收盤）
+        chg = p["last"] - base; pct = chg/base*100 if base else 0; c = cls(chg)
         rows.append(f'<tr><td>{name}</td><td>{comma(p["last"])}</td><td class="{c}">{arrow(chg)}{comma(abs(chg))}</td>'
                     f'<td class="{c}">{sign(pct)}%</td><td class="sub">{mmdd(p["date"])}</td></tr>')
-    note = "各列標資料日；紅漲綠跌。" if any_ok else "⚠️ 指數當日暫時抓取失敗，稍後自動重試即會恢復。"
-    return (f'<div class="date-tag">各指數收盤（資料日見每列）</div><table>'
+    note = "漲跌＝當日收盤−當日開盤；紅漲綠跌，各列標資料日。" if any_ok else "⚠️ 指數當日暫時抓取失敗，稍後自動重試即會恢復。"
+    return (f'<div class="date-tag">各指數當日開盤→收盤（資料日見每列）</div><table>'
             f'<tr><th>指數</th><th>收盤</th><th>漲跌</th><th>幅度</th><th>資料日</th></tr>'
             + "".join(rows) + f'</table><div class="note">{note}</div>')
 
@@ -532,7 +556,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v8"
+    STATUS["version"] = "v9"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
