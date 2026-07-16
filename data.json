@@ -43,7 +43,7 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-16T21:21:41.461856+08:00",
+ "updated": "2026-07-16T22:09:06.894594+08:00",
  "status": {
   "version": "v5",
   "prices_ok": [
@@ -63,7 +63,6 @@
   ],
   "prices_fail": [],
   "taifex": "ok",
-  "margin_exc": "JSONDecodeError",
   "margin_days": 7,
   "news_counts": {
    "tw": 8,
