@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-07-17": {
+   "foreign": -86189,
+   "trust": 75215,
+   "dealer": 4666,
+   "total": -6308
+  },
   "2026-07-16": {
    "foreign": -84453,
    "trust": 76264,
@@ -43,7 +49,7 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-17T00:06:58.691517+08:00",
+ "updated": "2026-07-17T15:35:39.352391+08:00",
  "status": {
   "version": "v10",
   "prices_ok": [
@@ -109,6 +115,6 @@
    "models/nano-banana-pro-preview",
    "models/gemini-3.1-flash-image-preview"
   ],
-  "gemini_model": "models/gemini-3.1-flash-lite"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
