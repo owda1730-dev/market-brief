@@ -49,7 +49,7 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-17T18:37:50.752608+08:00",
+ "updated": "2026-07-17T18:55:31.032821+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -74,17 +74,17 @@
   "prices_fail": [],
   "txf": "ok",
   "stockq": {
-   "taiex": "ok",
-   "otc": "ok",
-   "txf": "ok",
-   "dow": "ok",
-   "ndq": "ok",
-   "spx": "ok",
-   "sox": "ok",
-   "kospi": "ok",
-   "nikkei": "ok",
-   "hsi": "ok",
-   "sse": "ok"
+   "taiex": "err:ConnectTimeout",
+   "otc": "err:ConnectTimeout",
+   "txf": "err:ConnectTimeout",
+   "dow": "err:ConnectTimeout",
+   "ndq": "err:ConnectTimeout",
+   "spx": "err:ConnectTimeout",
+   "sox": "err:ConnectTimeout",
+   "kospi": "err:ConnectTimeout",
+   "nikkei": "err:ConnectTimeout",
+   "hsi": "err:ConnectTimeout",
+   "sse": "err:ConnectTimeout"
   },
   "taifex": "ok",
   "margin_days": 7,
