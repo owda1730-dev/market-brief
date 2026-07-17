@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v11 =================
-# 確認方法：data.json 的 status.version 應為 "v11"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v12 =================
+# 確認方法：data.json 的 status.version 應為 "v12"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -183,26 +183,33 @@ def _sqnum(x):
     except Exception: return None
 
 def fetch_stockq_index(code):
-    """從 StockQ 明細頁取 收盤(指數)/開盤/漲跌/日期。回 {last,open,prev,date} 或 None。"""
+    """從 StockQ 明細頁取 收盤/開盤/日期。用 header=None 掃描各列自行找表頭，較耐版型變化。"""
     import pandas as pd
     txt = http_get(f"https://www.stockq.org/index/{code}.php", timeout=20)
-    tables = pd.read_html(io.StringIO(txt))
+    tables = pd.read_html(io.StringIO(txt), header=None)
     last = op = chg = None; date = None
     for df in tables:
-        cols = [str(c) for c in df.columns]
-        if last is None and "開盤" in cols and "指數" in cols:
-            row = df.iloc[0]
-            last = _sqnum(row[[c for c in df.columns if str(c) == "指數"][0]])
-            op   = _sqnum(row[[c for c in df.columns if str(c) == "開盤"][0]])
-            try: chg = _sqnum(row[[c for c in df.columns if str(c) == "漲跌"][0]])
-            except Exception: chg = None
-        if date is None and any(str(c) in ("Date", "日期") for c in df.columns):
-            try:
-                dc = [c for c in df.columns if str(c) in ("Date", "日期")][0]
-                m = re.search(r"(20\d{2})[/-](\d{1,2})[/-](\d{1,2})", str(df.iloc[0][dc]))
-                if m: date = f"{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
-            except Exception: pass
+        rows = df.astype(str).values.tolist()
+        for i, rv in enumerate(rows):
+            # 摘要表頭：含「開盤」「指數」→ 下一列是數值
+            if op is None and "開盤" in rv and "指數" in rv and i + 1 < len(rows):
+                dr = rows[i + 1]
+                def g(name):
+                    try: return _sqnum(dr[rv.index(name)])
+                    except Exception: return None
+                op = g("開盤"); chg = g("漲跌")
+                if last is None: last = g("指數")
+            # 歷史表頭：含「Date」「Index」→ 下一列是最新日期與收盤
+            if date is None and "Date" in rv and "Index" in rv and i + 1 < len(rows):
+                dr = rows[i + 1]
+                try:
+                    m = re.search(r"(20\d{2})[/-](\d{1,2})[/-](\d{1,2})", dr[rv.index("Date")])
+                    if m:
+                        date = f"{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+                        if last is None: last = _sqnum(dr[rv.index("Index")])
+                except Exception: pass
     if last is None:
+        STATUS.setdefault("stockq_dbg", {})[code] = "parse-none"
         return None
     prev = last - chg if chg is not None else last
     return {"last": last, "open": op, "prev": prev, "lo": last, "hi": last,
@@ -639,7 +646,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v11"
+    STATUS["version"] = "v12"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
