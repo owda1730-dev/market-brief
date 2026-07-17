@@ -49,9 +49,9 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-17T15:35:39.352391+08:00",
+ "updated": "2026-07-17T18:19:20.783981+08:00",
  "status": {
-  "version": "v10",
+  "version": "v11",
   "prices_ok": [
    "taiex",
    "otc",
@@ -73,6 +73,19 @@
   ],
   "prices_fail": [],
   "txf": "ok",
+  "stockq": {
+   "taiex": "none",
+   "otc": "none",
+   "txf": "none",
+   "dow": "none",
+   "ndq": "none",
+   "spx": "none",
+   "sox": "none",
+   "kospi": "none",
+   "nikkei": "none",
+   "hsi": "none",
+   "sse": "none"
+  },
   "taifex": "ok",
   "margin_days": 7,
   "trump_src": {
