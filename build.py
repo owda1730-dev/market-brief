@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# ================= BUILD VERSION: v10 =================
-# 確認方法：data.json 的 status.version 應為 "v10"。若不是，代表上傳到舊檔。
+# ================= BUILD VERSION: v11 =================
+# 確認方法：data.json 的 status.version 應為 "v11"。若不是，代表上傳到舊檔。
 """
 市場總覽 · 每日自動建置腳本（v4）
 在 GitHub Actions（每天排程）上執行：抓官方/免費資料 → Gemini 產生敘事 → 填 template.html → index.html
@@ -175,6 +175,51 @@ def fetch_prices():
 # ===========================================================================
 # 期交所三大法人（臺股期貨 未平倉多空淨額「口數」= 倒數第二個數字欄）
 # ===========================================================================
+STOCKQ_CODES = {"taiex":"TWSE","otc":"TWOTCI","txf":"TXF","dow":"INDU","ndq":"CCMP",
+                "spx":"SPX","sox":"SOX","kospi":"KOSPI","nikkei":"NKY","hsi":"HSI","sse":"SHCOMP"}
+
+def _sqnum(x):
+    try: return float(str(x).replace(",", "").replace("%", "").strip())
+    except Exception: return None
+
+def fetch_stockq_index(code):
+    """從 StockQ 明細頁取 收盤(指數)/開盤/漲跌/日期。回 {last,open,prev,date} 或 None。"""
+    import pandas as pd
+    txt = http_get(f"https://www.stockq.org/index/{code}.php", timeout=20)
+    tables = pd.read_html(io.StringIO(txt))
+    last = op = chg = None; date = None
+    for df in tables:
+        cols = [str(c) for c in df.columns]
+        if last is None and "開盤" in cols and "指數" in cols:
+            row = df.iloc[0]
+            last = _sqnum(row[[c for c in df.columns if str(c) == "指數"][0]])
+            op   = _sqnum(row[[c for c in df.columns if str(c) == "開盤"][0]])
+            try: chg = _sqnum(row[[c for c in df.columns if str(c) == "漲跌"][0]])
+            except Exception: chg = None
+        if date is None and any(str(c) in ("Date", "日期") for c in df.columns):
+            try:
+                dc = [c for c in df.columns if str(c) in ("Date", "日期")][0]
+                m = re.search(r"(20\d{2})[/-](\d{1,2})[/-](\d{1,2})", str(df.iloc[0][dc]))
+                if m: date = f"{m.group(1)}-{int(m.group(2)):02d}-{int(m.group(3)):02d}"
+            except Exception: pass
+    if last is None:
+        return None
+    prev = last - chg if chg is not None else last
+    return {"last": last, "open": op, "prev": prev, "lo": last, "hi": last,
+            "date": date or NOW.date().isoformat(), "src": "stockq"}
+
+def fetch_stockq_all(prices):
+    st = {}
+    for key, code in STOCKQ_CODES.items():
+        try:
+            s = fetch_stockq_index(code)
+            if s: prices[key] = s   # StockQ 覆蓋（更可靠、日期正確、有開盤）
+            st[key] = "ok" if s else "none"
+        except Exception as e:
+            st[key] = f"err:{type(e).__name__}"
+        time.sleep(0.2)
+    STATUS["stockq"] = st
+
 def fetch_txf():
     """台指期近月 開/收（期交所 OpenAPI，盡力；失敗回 None）。"""
     j = http_get("https://openapi.taifex.com.tw/v1/DailyMarketReportFut", is_json=True, timeout=25)
@@ -594,7 +639,7 @@ def render_rt(prices):
 
 # ===========================================================================
 def main():
-    STATUS["version"] = "v10"
+    STATUS["version"] = "v11"
     data_path = os.path.join(HERE, "data.json")
     try:
         with open(data_path, encoding="utf-8") as f: store = json.load(f)
@@ -608,6 +653,8 @@ def main():
         _t = fetch_txf()
         if _t: prices["txf"] = _t
     except Exception as e: STATUS["txf"] = f"exc:{type(e).__name__}"
+    try: fetch_stockq_all(prices)   # 全球指數改用 StockQ 覆蓋（日期正確、含開盤、含台指近/櫃買）
+    except Exception as e: STATUS["stockq_exc"] = f"{type(e).__name__}"
 
     fut = None
     try: fut = fetch_taifex(); STATUS["taifex"] = "ok"
