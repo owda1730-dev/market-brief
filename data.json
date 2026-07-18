@@ -20,6 +20,10 @@
   }
  },
  "margin": {
+  "2026-07-17": {
+   "margin_yi": 5879.63,
+   "short_zhang": 236300
+  },
   "2026-07-16": {
    "margin_yi": 6155.76,
    "short_zhang": 176622
@@ -49,7 +53,7 @@
    "short_zhang": 213844
   }
  },
- "updated": "2026-07-17T18:55:31.032821+08:00",
+ "updated": "2026-07-18T15:12:14.230180+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -74,20 +78,20 @@
   "prices_fail": [],
   "txf": "ok",
   "stockq": {
-   "taiex": "err:ConnectTimeout",
-   "otc": "err:ConnectTimeout",
-   "txf": "err:ConnectTimeout",
-   "dow": "err:ConnectTimeout",
-   "ndq": "err:ConnectTimeout",
-   "spx": "err:ConnectTimeout",
-   "sox": "err:ConnectTimeout",
-   "kospi": "err:ConnectTimeout",
-   "nikkei": "err:ConnectTimeout",
-   "hsi": "err:ConnectTimeout",
-   "sse": "err:ConnectTimeout"
+   "taiex": "ok",
+   "otc": "ok",
+   "txf": "ok",
+   "dow": "ok",
+   "ndq": "ok",
+   "spx": "ok",
+   "sox": "ok",
+   "kospi": "ok",
+   "nikkei": "ok",
+   "hsi": "ok",
+   "sse": "ok"
   },
   "taifex": "ok",
-  "margin_days": 7,
+  "margin_days": 8,
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
