@@ -50,6 +50,10 @@
   }
  },
  "margin": {
+  "2026-07-24": {
+   "margin_yi": 5770.6,
+   "short_zhang": 204754
+  },
   "2026-07-23": {
    "margin_yi": 5826.26,
    "short_zhang": 208647
@@ -85,13 +89,9 @@
   "2026-07-13": {
    "margin_yi": 6182.99,
    "short_zhang": 203238
-  },
-  "2026-07-09": {
-   "margin_yi": 6196.48,
-   "short_zhang": 203714
   }
  },
- "updated": "2026-07-24T17:12:13.146206+08:00",
+ "updated": "2026-07-25T15:35:13.140912+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -170,6 +170,6 @@
    "models/nano-banana-pro-preview",
    "models/gemini-3.1-flash-image-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
