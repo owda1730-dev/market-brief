@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-07-28": {
+   "foreign": -82255,
+   "trust": 74886,
+   "dealer": 2588,
+   "total": -4781
+  },
   "2026-07-27": {
    "foreign": -78699,
    "trust": 74111,
@@ -56,6 +62,10 @@
   }
  },
  "margin": {
+  "2026-07-27": {
+   "margin_yi": 5686.63,
+   "short_zhang": 186233
+  },
   "2026-07-24": {
    "margin_yi": 5770.6,
    "short_zhang": 204754
@@ -91,13 +101,9 @@
   "2026-07-14": {
    "margin_yi": 6040.34,
    "short_zhang": 180712
-  },
-  "2026-07-13": {
-   "margin_yi": 6182.99,
-   "short_zhang": 203238
   }
  },
- "updated": "2026-07-27T20:41:04.898040+08:00",
+ "updated": "2026-07-28T18:04:51.717718+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -135,7 +141,7 @@
    "sse": "ok"
   },
   "taifex": "ok",
-  "margin_days": 10,
+  "margin_days": 11,
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
