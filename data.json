@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-08-07": {
+   "foreign": -87911,
+   "trust": 83077,
+   "dealer": 2512,
+   "total": -2322
+  },
   "2026-08-06": {
    "foreign": -89383,
    "trust": 84163,
@@ -53,15 +59,13 @@
    "trust": 74111,
    "dealer": 1891,
    "total": -2697
-  },
-  "2026-07-24": {
-   "foreign": -76260,
-   "trust": 73838,
-   "dealer": 2258,
-   "total": -164
   }
  },
  "margin": {
+  "2026-08-07": {
+   "margin_yi": 5376.65,
+   "short_zhang": 192740
+  },
   "2026-08-06": {
    "margin_yi": 5328.05,
    "short_zhang": 191897
@@ -97,13 +101,9 @@
   "2026-07-27": {
    "margin_yi": 5686.63,
    "short_zhang": 186233
-  },
-  "2026-07-24": {
-   "margin_yi": 5770.6,
-   "short_zhang": 204754
   }
  },
- "updated": "2026-08-07T13:53:36.294811+08:00",
+ "updated": "2026-08-08T12:18:22.620085+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -182,6 +182,6 @@
    "models/nano-banana-pro-preview",
    "models/gemini-3.1-flash-image-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
