@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-08-11": {
+   "foreign": -88924,
+   "trust": 83418,
+   "dealer": 1899,
+   "total": -3607
+  },
   "2026-08-10": {
    "foreign": -89201,
    "trust": 83751,
@@ -53,15 +59,13 @@
    "trust": 74742,
    "dealer": 2552,
    "total": -5491
-  },
-  "2026-07-28": {
-   "foreign": -82255,
-   "trust": 74886,
-   "dealer": 2588,
-   "total": -4781
   }
  },
  "margin": {
+  "2026-08-11": {
+   "margin_yi": 5441.52,
+   "short_zhang": 204819
+  },
   "2026-08-10": {
    "margin_yi": 5452.96,
    "short_zhang": 202632
@@ -97,13 +101,9 @@
   "2026-07-29": {
    "margin_yi": 5070.11,
    "short_zhang": 217485
-  },
-  "2026-07-28": {
-   "margin_yi": 5455.35,
-   "short_zhang": 219259
   }
  },
- "updated": "2026-08-11T12:50:39.428402+08:00",
+ "updated": "2026-08-12T13:46:26.707519+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -127,18 +127,31 @@
   ],
   "prices_fail": [],
   "txf": "ok",
+  "stockq_dbg": {
+   "TWSE": "parse-none",
+   "TWOTCI": "parse-none",
+   "TXF": "parse-none",
+   "INDU": "parse-none",
+   "CCMP": "parse-none",
+   "SPX": "parse-none",
+   "SOX": "parse-none",
+   "KOSPI": "parse-none",
+   "NKY": "parse-none",
+   "HSI": "parse-none",
+   "SHCOMP": "parse-none"
+  },
   "stockq": {
-   "taiex": "ok",
-   "otc": "ok",
-   "txf": "ok",
-   "dow": "ok",
-   "ndq": "ok",
-   "spx": "ok",
-   "sox": "ok",
-   "kospi": "ok",
-   "nikkei": "ok",
-   "hsi": "ok",
-   "sse": "ok"
+   "taiex": "none",
+   "otc": "none",
+   "txf": "none",
+   "dow": "none",
+   "ndq": "none",
+   "spx": "none",
+   "sox": "none",
+   "kospi": "none",
+   "nikkei": "none",
+   "hsi": "none",
+   "sse": "none"
   },
   "taifex": "ok",
   "margin_days": 11,
