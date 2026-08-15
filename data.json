@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-08-14": {
+   "foreign": -85179,
+   "trust": 80335,
+   "dealer": 1464,
+   "total": -3380
+  },
   "2026-08-13": {
    "foreign": -86249,
    "trust": 82327,
@@ -53,15 +59,13 @@
    "trust": 83900,
    "dealer": 718,
    "total": -5420
-  },
-  "2026-07-31": {
-   "foreign": -82515,
-   "trust": 85325,
-   "dealer": -2377,
-   "total": 433
   }
  },
  "margin": {
+  "2026-08-14": {
+   "margin_yi": 5470.59,
+   "short_zhang": 222827
+  },
   "2026-08-13": {
    "margin_yi": 5497.81,
    "short_zhang": 214046
@@ -97,13 +101,9 @@
   "2026-08-03": {
    "margin_yi": 5147.55,
    "short_zhang": 185322
-  },
-  "2026-07-31": {
-   "margin_yi": 5074.63,
-   "short_zhang": 188324
   }
  },
- "updated": "2026-08-14T13:46:48.503557+08:00",
+ "updated": "2026-08-15T09:23:12.655281+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -119,17 +119,13 @@
    "sse",
    "dxy",
    "wti",
+   "brent",
    "gold",
    "us10y",
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [
-   "brent"
-  ],
-  "price_diag": {
-   "brent": "stooq:<!DOCTYPE html><html><head><meta charset"
-  },
+  "prices_fail": [],
   "txf": "ok",
   "stockq_dbg": {
    "TWSE": "parse-none",
@@ -177,6 +173,7 @@
    "models/gemini-2.5-pro",
    "models/gemini-2.5-flash-preview-tts",
    "models/gemini-2.5-pro-preview-tts",
+   "models/gemini-3.7-flash-video-understanding-eap",
    "models/gemma-4-26b-a4b-it",
    "models/gemma-4-31b-it",
    "models/gemini-flash-latest",
@@ -196,9 +193,8 @@
    "models/gemini-3.1-flash-image",
    "models/gemini-3.1-flash-lite-image",
    "models/gemini-3.5-flash",
-   "models/gemini-3.5-flash-lite",
-   "models/gemini-omni-flash-preview"
+   "models/gemini-3.5-flash-lite"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
