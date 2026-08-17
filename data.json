@@ -103,11 +103,12 @@
    "short_zhang": 185322
   }
  },
- "updated": "2026-08-16T09:29:08.250100+08:00",
+ "updated": "2026-08-17T09:25:01.242190+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
+   "otc",
    "dow",
    "ndq",
    "spx",
@@ -124,12 +125,7 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [
-   "otc"
-  ],
-  "price_diag": {
-   "otc": "yf:HTTP429"
-  },
+  "prices_fail": [],
   "txf": "ok",
   "stockq_dbg": {
    "TWSE": "parse-none",
@@ -159,25 +155,31 @@
   },
   "taifex": "ok",
   "margin_days": 10,
+  "news_err": {
+   "tw": "HTTPError",
+   "us": "HTTPError",
+   "jp": "HTTPError",
+   "kr": "HTTPError",
+   "trump": "HTTPError"
+  },
   "trump_src": {
    "truth": 30,
-   "zhnews": 25,
+   "zhnews": "err:HTTPError",
    "jin10": "err:HTTPError"
   },
-  "trump_count": 55,
+  "trump_count": 30,
   "news_counts": {
-   "tw": 8,
-   "us": 8,
-   "jp": 8,
-   "kr": 8,
-   "trump": 55
+   "tw": 0,
+   "us": 0,
+   "jp": 0,
+   "kr": 0,
+   "trump": 30
   },
   "gemini_models_avail": [
    "models/gemini-2.5-flash",
    "models/gemini-2.5-pro",
    "models/gemini-2.5-flash-preview-tts",
    "models/gemini-2.5-pro-preview-tts",
-   "models/gemini-3.7-flash-video-understanding-eap",
    "models/gemma-4-26b-a4b-it",
    "models/gemma-4-31b-it",
    "models/gemini-flash-latest",
@@ -197,8 +199,9 @@
    "models/gemini-3.1-flash-image",
    "models/gemini-3.1-flash-lite-image",
    "models/gemini-3.5-flash",
-   "models/gemini-3.5-flash-lite"
+   "models/gemini-3.5-flash-lite",
+   "models/gemini-omni-flash-preview"
   ],
-  "gemini_model": "models/gemini-flash-latest"
+  "gemini_model": "models/gemini-3-flash-preview"
  }
 }
