@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-08-19": {
+   "foreign": -81501,
+   "trust": 74789,
+   "dealer": 2562,
+   "total": -4150
+  },
   "2026-08-18": {
    "foreign": -83078,
    "trust": 76112,
@@ -53,15 +59,13 @@
    "trust": 84163,
    "dealer": 2602,
    "total": -2618
-  },
-  "2026-08-05": {
-   "foreign": -87199,
-   "trust": 84575,
-   "dealer": 1311,
-   "total": -1313
   }
  },
  "margin": {
+  "2026-08-19": {
+   "margin_yi": 5481.9,
+   "short_zhang": 188334
+  },
   "2026-08-18": {
    "margin_yi": 5470.11,
    "short_zhang": 204455
@@ -97,18 +101,13 @@
   "2026-08-06": {
    "margin_yi": 5328.05,
    "short_zhang": 191897
-  },
-  "2026-08-05": {
-   "margin_yi": 5234.92,
-   "short_zhang": 197222
   }
  },
- "updated": "2026-08-19T09:23:27.594919+08:00",
+ "updated": "2026-08-20T09:22:47.146508+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
-   "otc",
    "dow",
    "ndq",
    "spx",
@@ -125,33 +124,25 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [],
-  "txf": "ok",
-  "stockq_dbg": {
-   "TWSE": "parse-none",
-   "TWOTCI": "parse-none",
-   "TXF": "parse-none",
-   "INDU": "parse-none",
-   "CCMP": "parse-none",
-   "SPX": "parse-none",
-   "SOX": "parse-none",
-   "KOSPI": "parse-none",
-   "NKY": "parse-none",
-   "HSI": "parse-none",
-   "SHCOMP": "parse-none"
+  "prices_fail": [
+   "otc"
+  ],
+  "price_diag": {
+   "otc": "yf:HTTP429"
   },
+  "txf": "ok",
   "stockq": {
-   "taiex": "none",
-   "otc": "none",
-   "txf": "none",
-   "dow": "none",
-   "ndq": "none",
-   "spx": "none",
-   "sox": "none",
-   "kospi": "none",
-   "nikkei": "none",
-   "hsi": "none",
-   "sse": "none"
+   "taiex": "ok",
+   "otc": "ok",
+   "txf": "ok",
+   "dow": "ok",
+   "ndq": "ok",
+   "spx": "ok",
+   "sox": "ok",
+   "kospi": "ok",
+   "nikkei": "ok",
+   "hsi": "ok",
+   "sse": "ok"
   },
   "taifex": "ok",
   "margin_days": 11,
@@ -195,6 +186,6 @@
    "models/gemini-3.5-flash-lite",
    "models/gemini-omni-flash-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
