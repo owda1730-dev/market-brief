@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-08-21": {
+   "foreign": -82594,
+   "trust": 76316,
+   "dealer": 1699,
+   "total": -4579
+  },
   "2026-08-20": {
    "foreign": -82423,
    "trust": 75825,
@@ -53,15 +59,13 @@
    "trust": 83751,
    "dealer": 1679,
    "total": -3771
-  },
-  "2026-08-07": {
-   "foreign": -87911,
-   "trust": 83077,
-   "dealer": 2512,
-   "total": -2322
   }
  },
  "margin": {
+  "2026-08-21": {
+   "margin_yi": 5469.39,
+   "short_zhang": 199998
+  },
   "2026-08-20": {
    "margin_yi": 5484.08,
    "short_zhang": 197390
@@ -97,17 +101,14 @@
   "2026-08-10": {
    "margin_yi": 5452.96,
    "short_zhang": 202632
-  },
-  "2026-08-07": {
-   "margin_yi": 5376.65,
-   "short_zhang": 192740
   }
  },
- "updated": "2026-08-21T09:26:55.787003+08:00",
+ "updated": "2026-08-22T09:22:12.598135+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
+   "otc",
    "dow",
    "ndq",
    "spx",
@@ -124,12 +125,7 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [
-   "otc"
-  ],
-  "price_diag": {
-   "otc": "yf:HTTP429"
-  },
+  "prices_fail": [],
   "txf": "ok",
   "stockq": {
    "taiex": "ok",
