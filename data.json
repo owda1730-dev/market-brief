@@ -103,11 +103,12 @@
    "short_zhang": 202632
   }
  },
- "updated": "2026-08-23T09:35:36.309134+08:00",
+ "updated": "2026-08-24T09:27:06.671229+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
+   "otc",
    "dow",
    "ndq",
    "spx",
@@ -124,12 +125,7 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [
-   "otc"
-  ],
-  "price_diag": {
-   "otc": "yf:HTTP429"
-  },
+  "prices_fail": [],
   "txf": "ok",
   "stockq": {
    "taiex": "ok",
@@ -186,6 +182,6 @@
    "models/gemini-3.5-flash-lite",
    "models/gemini-omni-flash-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
