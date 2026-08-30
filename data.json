@@ -103,12 +103,11 @@
    "short_zhang": 218218
   }
  },
- "updated": "2026-08-29T14:18:47.620573+08:00",
+ "updated": "2026-08-30T12:27:50.589026+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
-   "otc",
    "dow",
    "ndq",
    "spx",
@@ -125,7 +124,12 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [],
+  "prices_fail": [
+   "otc"
+  ],
+  "price_diag": {
+   "otc": "yf:HTTP429"
+  },
   "txf": "ok",
   "stockq": {
    "taiex": "ok",
@@ -141,7 +145,7 @@
    "sse": "ok"
   },
   "taifex": "ok",
-  "margin_days": 11,
+  "margin_days": 10,
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
