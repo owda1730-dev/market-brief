@@ -103,11 +103,12 @@
    "short_zhang": 218218
   }
  },
- "updated": "2026-08-30T12:27:50.589026+08:00",
+ "updated": "2026-08-31T12:32:40.249750+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
+   "otc",
    "dow",
    "ndq",
    "spx",
@@ -124,12 +125,7 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [
-   "otc"
-  ],
-  "price_diag": {
-   "otc": "yf:HTTP429"
-  },
+  "prices_fail": [],
   "txf": "ok",
   "stockq": {
    "taiex": "ok",
@@ -146,18 +142,25 @@
   },
   "taifex": "ok",
   "margin_days": 10,
+  "news_err": {
+   "tw": "HTTPError",
+   "us": "HTTPError",
+   "jp": "HTTPError",
+   "kr": "HTTPError",
+   "trump": "HTTPError"
+  },
   "trump_src": {
    "truth": 30,
-   "zhnews": 25,
+   "zhnews": "err:HTTPError",
    "jin10": "err:HTTPError"
   },
-  "trump_count": 55,
+  "trump_count": 30,
   "news_counts": {
-   "tw": 8,
-   "us": 8,
-   "jp": 8,
-   "kr": 8,
-   "trump": 55
+   "tw": 0,
+   "us": 0,
+   "jp": 0,
+   "kr": 0,
+   "trump": 30
   },
   "gemini_models_avail": [
    "models/gemini-2.5-flash",
@@ -186,6 +189,6 @@
    "models/gemini-3.5-flash-lite",
    "models/gemini-omni-flash-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
