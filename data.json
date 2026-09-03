@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-09-02": {
+   "foreign": -85329,
+   "trust": 75062,
+   "dealer": 1109,
+   "total": -9158
+  },
   "2026-09-01": {
    "foreign": -78706,
    "trust": 76027,
@@ -53,15 +59,13 @@
    "trust": 74789,
    "dealer": 2562,
    "total": -4150
-  },
-  "2026-08-18": {
-   "foreign": -83078,
-   "trust": 76112,
-   "dealer": 2566,
-   "total": -4400
   }
  },
  "margin": {
+  "2026-09-02": {
+   "margin_yi": 5856.75,
+   "short_zhang": 214315
+  },
   "2026-09-01": {
    "margin_yi": 5781.15,
    "short_zhang": 220835
@@ -97,13 +101,9 @@
   "2026-08-20": {
    "margin_yi": 5484.08,
    "short_zhang": 197390
-  },
-  "2026-08-19": {
-   "margin_yi": 5481.9,
-   "short_zhang": 188334
   }
  },
- "updated": "2026-09-02T11:37:21.375452+08:00",
+ "updated": "2026-09-03T11:37:30.175963+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -160,6 +160,7 @@
    "models/gemini-2.5-pro",
    "models/gemini-2.5-flash-preview-tts",
    "models/gemini-2.5-pro-preview-tts",
+   "models/gemini-flash-latest-high-res-exp",
    "models/gemma-4-26b-a4b-it",
    "models/gemma-4-31b-it",
    "models/gemini-flash-latest",
@@ -179,9 +180,8 @@
    "models/gemini-3.1-flash-image",
    "models/gemini-3.1-flash-lite-image",
    "models/gemini-3.5-flash",
-   "models/gemini-3.5-flash-lite",
-   "models/gemini-omni-flash-preview"
+   "models/gemini-3.5-flash-lite"
   ],
-  "gemini_model": "models/gemini-3.1-flash-lite"
+  "gemini_model": "models/gemini-3-flash-preview"
  }
 }
