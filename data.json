@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-09-03": {
+   "foreign": -81575,
+   "trust": 74389,
+   "dealer": 1134,
+   "total": -6052
+  },
   "2026-09-02": {
    "foreign": -85329,
    "trust": 75062,
@@ -53,15 +59,13 @@
    "trust": 75825,
    "dealer": 2019,
    "total": -4579
-  },
-  "2026-08-19": {
-   "foreign": -81501,
-   "trust": 74789,
-   "dealer": 2562,
-   "total": -4150
   }
  },
  "margin": {
+  "2026-09-03": {
+   "margin_yi": 5787.39,
+   "short_zhang": 222843
+  },
   "2026-09-02": {
    "margin_yi": 5856.75,
    "short_zhang": 214315
@@ -97,18 +101,13 @@
   "2026-08-21": {
    "margin_yi": 5469.39,
    "short_zhang": 199998
-  },
-  "2026-08-20": {
-   "margin_yi": 5484.08,
-   "short_zhang": 197390
   }
  },
- "updated": "2026-09-03T11:37:30.175963+08:00",
+ "updated": "2026-09-04T11:37:28.877019+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
    "taiex",
-   "otc",
    "dow",
    "ndq",
    "spx",
@@ -125,7 +124,12 @@
    "vix",
    "usdtwd"
   ],
-  "prices_fail": [],
+  "prices_fail": [
+   "otc"
+  ],
+  "price_diag": {
+   "otc": "yf:HTTP429"
+  },
   "txf": "ok",
   "stockq": {
    "taiex": "ok",
@@ -160,7 +164,6 @@
    "models/gemini-2.5-pro",
    "models/gemini-2.5-flash-preview-tts",
    "models/gemini-2.5-pro-preview-tts",
-   "models/gemini-flash-latest-high-res-exp",
    "models/gemma-4-26b-a4b-it",
    "models/gemma-4-31b-it",
    "models/gemini-flash-latest",
@@ -180,8 +183,9 @@
    "models/gemini-3.1-flash-image",
    "models/gemini-3.1-flash-lite-image",
    "models/gemini-3.5-flash",
-   "models/gemini-3.5-flash-lite"
+   "models/gemini-3.5-flash-lite",
+   "models/gemini-omni-flash-preview"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
