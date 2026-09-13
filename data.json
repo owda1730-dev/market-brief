@@ -103,7 +103,7 @@
    "short_zhang": 217718
   }
  },
- "updated": "2026-09-12T11:47:44.635083+08:00",
+ "updated": "2026-09-13T11:55:56.920328+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -141,54 +141,21 @@
    "sse": "ok"
   },
   "taifex": "ok",
-  "margin_days": 11,
-  "news_err": {
-   "tw": "HTTPError",
-   "us": "HTTPError",
-   "jp": "HTTPError",
-   "kr": "HTTPError",
-   "trump": "HTTPError"
-  },
+  "margin_days": 10,
   "trump_src": {
    "truth": 30,
-   "zhnews": "err:HTTPError",
+   "zhnews": 25,
    "jin10": "err:HTTPError"
   },
-  "trump_count": 30,
+  "trump_count": 55,
   "news_counts": {
-   "tw": 0,
-   "us": 0,
-   "jp": 0,
-   "kr": 0,
-   "trump": 30
+   "tw": 8,
+   "us": 8,
+   "jp": 8,
+   "kr": 8,
+   "trump": 55
   },
-  "gemini_models_avail": [
-   "models/gemini-2.5-flash",
-   "models/gemini-2.5-pro",
-   "models/gemini-2.5-flash-preview-tts",
-   "models/gemini-2.5-pro-preview-tts",
-   "models/gemma-4-26b-a4b-it",
-   "models/gemma-4-31b-it",
-   "models/gemini-flash-latest",
-   "models/gemini-flash-lite-latest",
-   "models/gemini-pro-latest",
-   "models/gemini-2.5-flash-lite",
-   "models/gemini-2.5-flash-image",
-   "models/gemini-3-flash-preview",
-   "models/gemini-3.1-pro-preview",
-   "models/gemini-3.1-pro-preview-customtools",
-   "models/gemini-3.1-flash-lite-preview",
-   "models/gemini-3.1-flash-lite",
-   "models/gemini-3-pro-image-preview",
-   "models/gemini-3-pro-image",
-   "models/nano-banana-pro-preview",
-   "models/gemini-3.1-flash-image-preview",
-   "models/gemini-3.1-flash-image",
-   "models/gemini-3.1-flash-lite-image",
-   "models/gemini-3.5-flash",
-   "models/gemini-3.5-flash-lite",
-   "models/gemini-omni-flash-preview"
-  ],
+  "gemini_list_err": "HTTPError:503 Server Error: Service Unavailable for url: https://generativelanguage.google",
   "gemini_model": "models/gemini-3-flash-preview"
  }
 }
