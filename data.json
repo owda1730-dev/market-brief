@@ -103,7 +103,7 @@
    "short_zhang": 217718
   }
  },
- "updated": "2026-09-13T11:55:56.920328+08:00",
+ "updated": "2026-09-14T12:03:17.999720+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -128,17 +128,17 @@
   "prices_fail": [],
   "txf": "ok",
   "stockq": {
-   "taiex": "ok",
-   "otc": "ok",
-   "txf": "ok",
-   "dow": "ok",
-   "ndq": "ok",
-   "spx": "ok",
-   "sox": "ok",
-   "kospi": "ok",
-   "nikkei": "ok",
-   "hsi": "ok",
-   "sse": "ok"
+   "taiex": "err:ConnectTimeout",
+   "otc": "err:ConnectTimeout",
+   "txf": "err:ConnectTimeout",
+   "dow": "err:ConnectTimeout",
+   "ndq": "err:ConnectTimeout",
+   "spx": "err:ConnectTimeout",
+   "sox": "err:ConnectTimeout",
+   "kospi": "err:ConnectTimeout",
+   "nikkei": "err:ConnectTimeout",
+   "hsi": "err:ConnectTimeout",
+   "sse": "err:ConnectTimeout"
   },
   "taifex": "ok",
   "margin_days": 10,
@@ -155,7 +155,33 @@
    "kr": 8,
    "trump": 55
   },
-  "gemini_list_err": "HTTPError:503 Server Error: Service Unavailable for url: https://generativelanguage.google",
+  "gemini_models_avail": [
+   "models/gemini-2.5-flash",
+   "models/gemini-2.5-pro",
+   "models/gemini-2.5-flash-preview-tts",
+   "models/gemini-2.5-pro-preview-tts",
+   "models/gemma-4-26b-a4b-it",
+   "models/gemma-4-31b-it",
+   "models/gemini-flash-latest",
+   "models/gemini-flash-lite-latest",
+   "models/gemini-pro-latest",
+   "models/gemini-2.5-flash-lite",
+   "models/gemini-2.5-flash-image",
+   "models/gemini-3-flash-preview",
+   "models/gemini-3.1-pro-preview",
+   "models/gemini-3.1-pro-preview-customtools",
+   "models/gemini-3.1-flash-lite-preview",
+   "models/gemini-3.1-flash-lite",
+   "models/gemini-3-pro-image-preview",
+   "models/gemini-3-pro-image",
+   "models/nano-banana-pro-preview",
+   "models/gemini-3.1-flash-image-preview",
+   "models/gemini-3.1-flash-image",
+   "models/gemini-3.1-flash-lite-image",
+   "models/gemini-3.5-flash",
+   "models/gemini-3.5-flash-lite",
+   "models/gemini-omni-flash-preview"
+  ],
   "gemini_model": "models/gemini-3-flash-preview"
  }
 }
