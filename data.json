@@ -103,7 +103,7 @@
    "short_zhang": 197926
   }
  },
- "updated": "2026-09-28T12:27:06.071160+08:00",
+ "updated": "2026-09-29T12:56:31.550041+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -186,6 +186,6 @@
    "models/gemini-3.5-flash-lite",
    "models/gemini-omni-flash-preview"
   ],
-  "gemini_model": "models/gemini-flash-latest"
+  "gemini_model": "models/gemini-3.1-flash-lite"
  }
 }
