@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-10-06": {
+   "foreign": -79517,
+   "trust": 76208,
+   "dealer": -1884,
+   "total": -5193
+  },
   "2026-10-05": {
    "foreign": -77004,
    "trust": 75144,
@@ -53,15 +59,13 @@
    "trust": 74019,
    "dealer": -3354,
    "total": -3416
-  },
-  "2026-09-18": {
-   "foreign": -76110,
-   "trust": 75110,
-   "dealer": -3192,
-   "total": -4192
   }
  },
  "margin": {
+  "2026-10-06": {
+   "margin_yi": 6376.57,
+   "short_zhang": 214529
+  },
   "2026-10-05": {
    "margin_yi": 6333.52,
    "short_zhang": 218458
@@ -97,13 +101,9 @@
   "2026-09-21": {
    "margin_yi": 6030.38,
    "short_zhang": 231582
-  },
-  "2026-09-18": {
-   "margin_yi": 5940.39,
-   "short_zhang": 222965
   }
  },
- "updated": "2026-10-06T13:32:47.735916+08:00",
+ "updated": "2026-10-07T13:02:46.934957+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -146,18 +146,25 @@
   },
   "taifex": "ok",
   "margin_days": 11,
+  "news_err": {
+   "tw": "HTTPError",
+   "us": "HTTPError",
+   "jp": "HTTPError",
+   "kr": "HTTPError",
+   "trump": "HTTPError"
+  },
   "trump_src": {
    "truth": 30,
-   "zhnews": 25,
+   "zhnews": "err:HTTPError",
    "jin10": "err:HTTPError"
   },
-  "trump_count": 55,
+  "trump_count": 30,
   "news_counts": {
-   "tw": 8,
-   "us": 8,
-   "jp": 8,
-   "kr": 8,
-   "trump": 55
+   "tw": 0,
+   "us": 0,
+   "jp": 0,
+   "kr": 0,
+   "trump": 30
   },
   "gemini_models_avail": [
    "models/gemini-2.5-flash",
@@ -182,9 +189,9 @@
    "models/gemini-3.1-flash-image-preview",
    "models/gemini-3.1-flash-image",
    "models/gemini-3.1-flash-lite-image",
+   "models/gemini-nano-banana-2.1",
    "models/gemini-3.5-flash",
-   "models/gemini-3.5-flash-lite",
-   "models/gemini-omni-flash-preview"
+   "models/gemini-3.5-flash-lite"
   ],
   "gemini_model": "models/gemini-3-flash-preview"
  }
