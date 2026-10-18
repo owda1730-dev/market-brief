@@ -103,7 +103,7 @@
    "short_zhang": 231986
   }
  },
- "updated": "2026-10-17T11:35:48.560768+08:00",
+ "updated": "2026-10-18T11:42:27.637380+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -144,8 +144,8 @@
    "hsi": "ok",
    "sse": "ok"
   },
-  "taifex": "ok",
-  "margin_days": 11,
+  "taifex": "err:ReadTimeout:HTTPSConnectionPool(host='www.taifex.com.tw', port=443): Read timed out. (read timeout=25)",
+  "margin_days": 10,
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
@@ -186,6 +186,6 @@
    "models/gemini-3.5-flash",
    "models/gemini-3.5-flash-lite"
   ],
-  "gemini_model": "models/gemini-flash-latest"
+  "gemini_model": "models/gemini-flash-lite-latest"
  }
 }
