@@ -103,7 +103,7 @@
    "short_zhang": 211949
   }
  },
- "updated": "2026-10-25T11:50:15.515396+08:00",
+ "updated": "2026-10-26T11:54:01.860601+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -144,7 +144,7 @@
    "hsi": "ok",
    "sse": "ok"
   },
-  "taifex": "ok",
+  "taifex": "err:ReadTimeout:HTTPSConnectionPool(host='www.taifex.com.tw', port=443): Read timed out. (read timeout=25)",
   "margin_days": 10,
   "trump_src": {
    "truth": 30,
