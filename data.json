@@ -62,6 +62,10 @@
   }
  },
  "margin": {
+  "2026-10-28": {
+   "margin_yi": 6323.0,
+   "short_zhang": 193040
+  },
   "2026-10-27": {
    "margin_yi": 6233.87,
    "short_zhang": 217708
@@ -97,13 +101,9 @@
   "2026-10-13": {
    "margin_yi": 6449.79,
    "short_zhang": 225459
-  },
-  "2026-10-12": {
-   "margin_yi": 6533.3,
-   "short_zhang": 216189
   }
  },
- "updated": "2026-10-28T12:45:07.883217+08:00",
+ "updated": "2026-10-29T12:57:06.907307+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -144,7 +144,7 @@
    "hsi": "ok",
    "sse": "ok"
   },
-  "taifex": "ok",
+  "taifex": "err:ReadTimeout:HTTPSConnectionPool(host='www.taifex.com.tw', port=443): Read timed out. (read timeout=25)",
   "margin_days": 11,
   "trump_src": {
    "truth": 30,
@@ -186,6 +186,6 @@
    "models/gemini-3.5-flash",
    "models/gemini-3.5-flash-lite"
   ],
-  "gemini_model": "models/gemini-flash-latest"
+  "gemini_model": "models/gemini-3-flash-preview"
  }
 }
