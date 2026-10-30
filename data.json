@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-10-29": {
+   "foreign": -89522,
+   "trust": 87218,
+   "dealer": 1511,
+   "total": -793
+  },
   "2026-10-27": {
    "foreign": -86043,
    "trust": 85052,
@@ -53,15 +59,13 @@
    "trust": 77838,
    "dealer": 1491,
    "total": -7910
-  },
-  "2026-10-08": {
-   "foreign": -83194,
-   "trust": 76339,
-   "dealer": -534,
-   "total": -7389
   }
  },
  "margin": {
+  "2026-10-29": {
+   "margin_yi": 6339.11,
+   "short_zhang": 189002
+  },
   "2026-10-28": {
    "margin_yi": 6323.0,
    "short_zhang": 193040
@@ -97,13 +101,9 @@
   "2026-10-14": {
    "margin_yi": 6515.67,
    "short_zhang": 228653
-  },
-  "2026-10-13": {
-   "margin_yi": 6449.79,
-   "short_zhang": 225459
   }
  },
- "updated": "2026-10-29T12:57:06.907307+08:00",
+ "updated": "2026-10-30T12:56:56.581480+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -144,7 +144,7 @@
    "hsi": "ok",
    "sse": "ok"
   },
-  "taifex": "err:ReadTimeout:HTTPSConnectionPool(host='www.taifex.com.tw', port=443): Read timed out. (read timeout=25)",
+  "taifex": "ok",
   "margin_days": 11,
   "trump_src": {
    "truth": 30,
@@ -186,6 +186,6 @@
    "models/gemini-3.5-flash",
    "models/gemini-3.5-flash-lite"
   ],
-  "gemini_model": "models/gemini-3-flash-preview"
+  "gemini_model": "models/gemini-flash-latest"
  }
 }
