@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-11-02": {
+   "foreign": -89379,
+   "trust": 89139,
+   "dealer": 1307,
+   "total": 1067
+  },
   "2026-10-30": {
    "foreign": -92241,
    "trust": 89211,
@@ -53,15 +59,13 @@
    "trust": 78929,
    "dealer": 6894,
    "total": -11759
-  },
-  "2026-10-14": {
-   "foreign": -86814,
-   "trust": 78417,
-   "dealer": 2314,
-   "total": -6083
   }
  },
  "margin": {
+  "2026-11-02": {
+   "margin_yi": 6226.99,
+   "short_zhang": 194930
+  },
   "2026-10-30": {
    "margin_yi": 6234.68,
    "short_zhang": 197359
@@ -97,13 +101,9 @@
   "2026-10-16": {
    "margin_yi": 6455.94,
    "short_zhang": 233602
-  },
-  "2026-10-15": {
-   "margin_yi": 6464.15,
-   "short_zhang": 229150
   }
  },
- "updated": "2026-11-02T13:05:21.310363+08:00",
+ "updated": "2026-11-03T13:52:25.900440+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -132,20 +132,20 @@
   },
   "txf": "ok",
   "stockq": {
-   "taiex": "ok",
-   "otc": "ok",
-   "txf": "ok",
-   "dow": "ok",
-   "ndq": "ok",
-   "spx": "ok",
-   "sox": "ok",
-   "kospi": "ok",
-   "nikkei": "ok",
-   "hsi": "ok",
-   "sse": "ok"
+   "taiex": "err:ConnectTimeout",
+   "otc": "err:ConnectTimeout",
+   "txf": "err:ConnectTimeout",
+   "dow": "err:ConnectTimeout",
+   "ndq": "err:ConnectTimeout",
+   "spx": "err:ConnectTimeout",
+   "sox": "err:ConnectTimeout",
+   "kospi": "err:ConnectTimeout",
+   "nikkei": "err:ConnectTimeout",
+   "hsi": "err:ConnectTimeout",
+   "sse": "err:ConnectTimeout"
   },
   "taifex": "ok",
-  "margin_days": 10,
+  "margin_days": 11,
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
