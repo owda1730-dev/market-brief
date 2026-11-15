@@ -103,7 +103,7 @@
    "short_zhang": 194930
   }
  },
- "updated": "2026-11-14T13:34:56.644923+08:00",
+ "updated": "2026-11-15T13:31:49.665741+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -145,7 +145,7 @@
    "sse": "ok"
   },
   "taifex": "ok",
-  "margin_days": 11,
+  "margin_days": 10,
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
