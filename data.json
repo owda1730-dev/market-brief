@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-11-17": {
+   "foreign": -97896,
+   "trust": 91226,
+   "dealer": -436,
+   "total": -7106
+  },
   "2026-11-13": {
    "foreign": -100870,
    "trust": 99923,
@@ -53,15 +59,13 @@
    "trust": 89211,
    "dealer": 1736,
    "total": -1294
-  },
-  "2026-10-29": {
-   "foreign": -89522,
-   "trust": 87218,
-   "dealer": 1511,
-   "total": -793
   }
  },
  "margin": {
+  "2026-11-16": {
+   "margin_yi": 5244.98,
+   "short_zhang": 217384
+  },
   "2026-11-13": {
    "margin_yi": 5365.99,
    "short_zhang": 208773
@@ -97,13 +101,9 @@
   "2026-11-03": {
    "margin_yi": 5997.74,
    "short_zhang": 257961
-  },
-  "2026-11-02": {
-   "margin_yi": 6226.99,
-   "short_zhang": 194930
   }
  },
- "updated": "2026-11-16T13:31:22.539638+08:00",
+ "updated": "2026-11-17T15:09:31.688863+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -130,7 +130,7 @@
   "price_diag": {
    "otc": "yf:HTTP429"
   },
-  "txf": "exc:JSONDecodeError",
+  "txf": "ok",
   "stockq": {
    "taiex": "ok",
    "otc": "ok",
@@ -145,7 +145,12 @@
    "sse": "ok"
   },
   "taifex": "ok",
-  "margin_days": 10,
+  "margin_days": 11,
+  "news_err": {
+   "tw": "HTTPError",
+   "us": "HTTPError",
+   "kr": "HTTPError"
+  },
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
@@ -153,10 +158,10 @@
   },
   "trump_count": 55,
   "news_counts": {
-   "tw": 8,
-   "us": 8,
+   "tw": 0,
+   "us": 0,
    "jp": 8,
-   "kr": 8,
+   "kr": 0,
    "trump": 55
   },
   "gemini_models_avail": [
