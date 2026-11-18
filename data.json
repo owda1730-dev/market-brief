@@ -1,5 +1,11 @@
 {
  "futures": {
+  "2026-11-18": {
+   "foreign": -2620,
+   "trust": 2347,
+   "dealer": -2486,
+   "total": -2759
+  },
   "2026-11-17": {
    "foreign": -97896,
    "trust": 91226,
@@ -53,15 +59,13 @@
    "trust": 89139,
    "dealer": 1307,
    "total": 1067
-  },
-  "2026-10-30": {
-   "foreign": -92241,
-   "trust": 89211,
-   "dealer": 1736,
-   "total": -1294
   }
  },
  "margin": {
+  "2026-11-17": {
+   "margin_yi": 5087.21,
+   "short_zhang": 207959
+  },
   "2026-11-16": {
    "margin_yi": 5244.98,
    "short_zhang": 217384
@@ -97,13 +101,9 @@
   "2026-11-04": {
    "margin_yi": 5969.46,
    "short_zhang": 246812
-  },
-  "2026-11-03": {
-   "margin_yi": 5997.74,
-   "short_zhang": 257961
   }
  },
- "updated": "2026-11-17T15:09:31.688863+08:00",
+ "updated": "2026-11-18T14:34:08.509673+08:00",
  "status": {
   "version": "v12",
   "prices_ok": [
@@ -146,11 +146,6 @@
   },
   "taifex": "ok",
   "margin_days": 11,
-  "news_err": {
-   "tw": "HTTPError",
-   "us": "HTTPError",
-   "kr": "HTTPError"
-  },
   "trump_src": {
    "truth": 30,
    "zhnews": 25,
@@ -158,10 +153,10 @@
   },
   "trump_count": 55,
   "news_counts": {
-   "tw": 0,
-   "us": 0,
+   "tw": 8,
+   "us": 8,
    "jp": 8,
-   "kr": 0,
+   "kr": 8,
    "trump": 55
   },
   "gemini_models_avail": [
